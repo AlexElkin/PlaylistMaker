@@ -7,5 +7,5 @@
     <string name="share_the_app" translatable="false">Поделиться приложением</string>
     <string name="write_to_support" translatable="false">Написать в поддержку</string>
     <string name="user_agreement" translatable="false">Пользовательское соглашение</string>
-    <string name="button_back">button back</string>
+    <string name="button_back" translatable="false">button back</string>
 </resources>
