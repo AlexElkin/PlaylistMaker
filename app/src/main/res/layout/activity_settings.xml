@@ -49,6 +49,8 @@
         android:text="@string/dark_theme"
         android:textColor="@color/black"
         android:textSize="@dimen/_16sp"
+        android:thumbTint="@color/switch_thumb_color"
+        android:trackTint="@color/switch_track_color"
         tools:ignore="UseSwitchCompatOrMaterialXml">
 
     </Switch>
