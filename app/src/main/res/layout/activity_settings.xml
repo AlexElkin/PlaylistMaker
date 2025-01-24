@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/button_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            android:contentDescription="@string/button_back"
+            android:gravity="center"
+            android:padding="16dp"
+            android:src="@drawable/vector">
+
+        </ImageButton>
+
+
+        <TextView
+            android:id="@+id/textView_settings"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="12dp"
+            android:gravity="center_vertical"
+            android:text="@string/settings"
+            android:textColor="@color/black"
+            android:textSize="22sp">
+
+        </TextView>
+
+    </LinearLayout>
+
+    <Switch
+        android:id="@+id/switch_theme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="@dimen/settings_padding_20"
+        android:paddingEnd="6dp"
+        android:paddingStart="@dimen/_16dp"
+        android:text="@string/dark_theme"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_16sp"
+        android:thumbTint="@color/switch_thumb_color"
+        android:trackTint="@color/switch_track_color"
+        tools:ignore="UseSwitchCompatOrMaterialXml">
+
+    </Switch>
+
+
+    <TextView
+        android:id="@+id/textView_share_the_app"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="@dimen/_16dp"
+        android:padding="@dimen/settings_padding_20"
+        android:text="@string/share_the_app"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_16sp"
+        app:drawableEndCompat="@drawable/to_share">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/textView_write_to_support"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="@dimen/_16dp"
+        android:padding="@dimen/settings_padding_20"
+        android:text="@string/write_to_support"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_16sp"
+        app:drawableEndCompat="@drawable/support">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/textView_user_agreement"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="@dimen/_16dp"
+        android:padding="@dimen/settings_padding_20"
+        android:text="@string/user_agreement"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_16sp"
+        app:drawableEndCompat="@drawable/arrow">
+
+    </TextView>
+
+</androidx.appcompat.widget.LinearLayoutCompat>
