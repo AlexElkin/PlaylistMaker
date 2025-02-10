@@ -8,22 +8,24 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        tools:targetApi="31"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.Material3.DayNight.NoActionBar"
-        tools:targetApi="31">
+        android:supportsRtl="true">
         <activity
             android:name=".ActivitySearch"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Base.Theme.PlaylistMaker.ActivitySettings"/>
         <activity
             android:name=".ActivityLibrary"
             android:exported="false" />
         <activity
             android:name=".ActivitySettings"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Base.Theme.PlaylistMaker.ActivitySettings" />
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Base.Theme.PlaylistMaker.ActivityMain">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

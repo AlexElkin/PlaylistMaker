@@ -7,5 +7,15 @@
     <string name="share_the_app" translatable="false">Поделиться приложением</string>
     <string name="write_to_support" translatable="false">Написать в поддержку</string>
     <string name="user_agreement" translatable="false">Пользовательское соглашение</string>
-    <string name="button_back" translatable="false">button back</string>
+    <string name="button_back" translatable="false">Кнопка возврата</string>
+    <string name="toolbar_image_desc" translatable="false">back</string>
+    <string name="link_android_developer_plus" translatable="false">https://practicum.yandex.ru/android-developer-plus/</string>
+    <string name="no_mail_applications" translatable="false">Почтовые приложения не найдены</string>
+    <string name="select_email_application" translatable="false">Выберите почтовое приложение</string>
+    <string name="link_practicum_offer" translatable="false">https://yandex.ru/legal/practicum_offer/</string>
+    <string name="text_mail" translatable="false">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+    <string name="theme_mail" translatable="false">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="email" translatable="false">saschelckin@yandex.ru</string>
+    <string name="enter_request">Введите запрос</string>
+    <string name="search_label">надпись поиск</string>
 </resources>
