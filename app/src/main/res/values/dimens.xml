@@ -5,4 +5,5 @@
     <dimen name="_8dp">8dp</dimen>
     <dimen name="_16sp">16sp</dimen>
     <dimen name="_22sp">22sp</dimen>
+    <dimen name="_320dp">320dp</dimen>
 </resources>
