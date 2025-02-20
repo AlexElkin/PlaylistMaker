@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 
 class AdapterSearsh(
     private val tracks: List<Track>
@@ -25,13 +26,17 @@ class AdapterSearsh(
             imageButton = itemView.findViewById(R.id.track_view_logo)
         }
 
-        fun bind(model: Track, context: Context) {
+        fun bind(model: Track) {
             trackName.text = model.trackName
             artistName.text = model.artistName
             trackTime.text = model.trackTime
-            if (networkTest(context)){
-                Glide.with(context).load(model.artworkUrl100).into(imageButton)
-            } else imageButton.setImageResource(R.drawable.baseline_sync_problem_24)
+            try {
+                Glide.with(imageButton.context).load(model.artworkUrl100).transform(
+                    RoundedCornersTransformation(2, 0)
+                ).into(imageButton)
+            } catch (e: Exception) {
+                imageButton.setImageResource(R.drawable.baseline_sync_problem_24)
+            }
 
         }
     }
@@ -44,6 +49,6 @@ class AdapterSearsh(
     override fun getItemCount() = tracks.size
 
     override fun onBindViewHolder(holder: ViewHolderSearsh, position: Int) {
-        holder.bind(tracks[position],holder.itemView.context)
+        holder.bind(tracks[position])
     }
 }

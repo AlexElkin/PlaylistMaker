@@ -139,7 +139,7 @@ class ActivitySearch : AppCompatActivity() {
         recycler.adapter = AdapterSearsh(
             tracks = List(5) {
                 val tr = track[Random.nextInt(0, track.size)]
-                Track(tr.trackName, tr.artistName, tr.artistName, tr.artworkUrl100)
+                Track(tr.trackName, tr.artistName, tr.trackTime, tr.artworkUrl100)
 
             }
         )

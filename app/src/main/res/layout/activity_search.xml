@@ -35,6 +35,7 @@
         android:orientation="horizontal"
         android:background="@drawable/rounded_background"
         android:layout_marginHorizontal="@dimen/_16dp"
+        android:layout_marginVertical="@dimen/_8dp"
         >
 
         <EditText
@@ -43,6 +44,7 @@
             android:layout_height="wrap_content"
             android:autofillHints="@string/search"
             android:backgroundTint="@android:color/transparent"
+            android:cursorVisible="true"
             android:drawableStart="@drawable/magnifier"
             android:drawablePadding="4dp"
             android:hint="@string/search"
@@ -52,9 +54,8 @@
             android:paddingVertical="@dimen/_8dp"
             android:textColor="@color/black"
             android:textColorHint="@color/activitySearch.grayBlack"
-            tools:ignore="TouchTargetSizeCheck"
-            android:cursorVisible="true"
-            android:textCursorDrawable="@color/blue">
+            android:textCursorDrawable="@color/blue"
+            tools:ignore="TouchTargetSizeCheck">
 
         </EditText>
 
@@ -64,7 +65,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/search"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:paddingVertical="@dimen/_12dp"
+            android:paddingHorizontal="@dimen/_14dp"
+            android:src="@drawable/clear"
+            android:background="@drawable/rounded_background"
             android:backgroundTint="@color/activitySearch.backgroundGrayWhite"
             android:visibility="gone" />
 
@@ -73,6 +77,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/activity_search_recyclerView"
+        android:layout_marginTop="@dimen/_16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
