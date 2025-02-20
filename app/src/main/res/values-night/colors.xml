@@ -2,6 +2,7 @@
 <resources>
     <color name="iconColorBlackWhite">#FFFFFFFF</color>
     <color name="iconColorWhiteBlack">#FF000000</color>
+    <color name="iconColorGrayWhite">#FFFFFFFF</color>
     <color name="activitySearch.grayBlack">#FF000000</color>
     <color name="activitySearch.backgroundGrayWhite">#FFFFFFFF</color>
     <color name="white">#FFFFFFFF</color>

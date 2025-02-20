@@ -15,14 +15,14 @@
 
         <ImageButton
             android:id="@+id/activity_search_button_back"
-            style="@style/toolBar_button_back"
+            style="@style/style_toolBar_button_back"
             android:contentDescription="@string/button_back">
         </ImageButton>
 
         <TextView
             android:id="@+id/activity_search_textView_search"
             android:text="@string/search"
-            style="@style/toolBar_textView"
+            style="@style/style_toolBar_textView"
             android:contentDescription="@string/search_label">
 
         </TextView>
@@ -52,12 +52,14 @@
             android:paddingVertical="@dimen/_8dp"
             android:textColor="@color/black"
             android:textColorHint="@color/activitySearch.grayBlack"
-            tools:ignore="TouchTargetSizeCheck">
+            tools:ignore="TouchTargetSizeCheck"
+            android:cursorVisible="true"
+            android:textCursorDrawable="@color/blue">
 
         </EditText>
 
         <ImageView
-            android:id="@+id/clearIcon"
+            android:id="@+id/activity_search_clearIcon"
             android:layout_gravity="end|center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -68,5 +70,12 @@
 
 
     </FrameLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/activity_search_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </androidx.recyclerview.widget.RecyclerView>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

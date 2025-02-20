@@ -6,4 +6,6 @@
     <dimen name="_16sp">16sp</dimen>
     <dimen name="_22sp">22sp</dimen>
     <dimen name="_320dp">320dp</dimen>
+    <dimen name="_14dp">14dp</dimen>
+    <dimen name="_18dp">18dp</dimen>
 </resources>
