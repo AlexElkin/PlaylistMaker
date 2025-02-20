@@ -14,7 +14,7 @@
 
         <ImageButton
             android:id="@+id/activity_settings_button_back"
-            style="@style/toolBar_button_back"
+            style="@style/style_toolBar_button_back"
             android:contentDescription="@string/button_back">
 
         </ImageButton>
@@ -22,7 +22,7 @@
         <TextView
             android:id="@+id/activity_settings_textView_settings"
             android:text="@string/settings"
-            style="@style/toolBar_textView">
+            style="@style/style_toolBar_textView">
 
         </TextView>
 
@@ -48,7 +48,7 @@
 
     <TextView
         android:id="@+id/activity_settings_textView_share_the_app"
-        style="@style/textView_activity_settings"
+        style="@style/style_textView_activity_settings"
         android:text="@string/share_the_app"
         app:drawableEndCompat="@drawable/to_share">
 
@@ -56,7 +56,7 @@
 
     <TextView
         android:id="@+id/activity_settings_textView_write_to_support"
-        style="@style/textView_activity_settings"
+        style="@style/style_textView_activity_settings"
         android:text="@string/write_to_support"
         app:drawableEndCompat="@drawable/support">
 
@@ -64,7 +64,7 @@
 
     <TextView
         android:id="@+id/activity_settings_textView_user_agreement"
-        style="@style/textView_activity_settings"
+        style="@style/style_textView_activity_settings"
         android:text="@string/user_agreement"
         app:drawableEndCompat="@drawable/arrow">
 

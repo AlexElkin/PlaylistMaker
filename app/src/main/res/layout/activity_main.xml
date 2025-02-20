@@ -21,21 +21,21 @@
 
     <Button
         android:id="@+id/activity_main_button_search"
-        style="@style/button_activity_main"
+        style="@style/style_button_activity_main"
         android:text="@string/search"
         app:cornerRadius="@dimen/_16dp"
         app:icon="@drawable/magnifier" />
 
     <Button
         android:id="@+id/activity_main_button_library"
-        style="@style/button_activity_main"
+        style="@style/style_button_activity_main"
         android:text="@string/media_library"
         app:cornerRadius="@dimen/_16dp"
         app:icon="@drawable/media_library"/>
 
     <Button
         android:id="@+id/activity_main_button_settings"
-        style="@style/button_activity_main"
+        style="@style/style_button_activity_main"
         android:text="@string/settings"
         app:cornerRadius="@dimen/_16dp"
         app:icon="@drawable/settings" />
