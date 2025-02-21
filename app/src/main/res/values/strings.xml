@@ -18,4 +18,6 @@
     <string name="email" translatable="false">saschelckin@yandex.ru</string>
     <string name="enter_request">Введите запрос</string>
     <string name="search_label">надпись поиск</string>
+    <string name="view_arrow">view arrow</string>
+    <string name="logo">logo</string>
 </resources>

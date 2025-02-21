@@ -15,14 +15,14 @@
 
         <ImageButton
             android:id="@+id/activity_search_button_back"
-            style="@style/toolBar_button_back"
+            style="@style/style_toolBar_button_back"
             android:contentDescription="@string/button_back">
         </ImageButton>
 
         <TextView
             android:id="@+id/activity_search_textView_search"
             android:text="@string/search"
-            style="@style/toolBar_textView"
+            style="@style/style_toolBar_textView"
             android:contentDescription="@string/search_label">
 
         </TextView>
@@ -35,6 +35,7 @@
         android:orientation="horizontal"
         android:background="@drawable/rounded_background"
         android:layout_marginHorizontal="@dimen/_16dp"
+        android:layout_marginVertical="@dimen/_8dp"
         >
 
         <EditText
@@ -43,6 +44,7 @@
             android:layout_height="wrap_content"
             android:autofillHints="@string/search"
             android:backgroundTint="@android:color/transparent"
+            android:cursorVisible="true"
             android:drawableStart="@drawable/magnifier"
             android:drawablePadding="4dp"
             android:hint="@string/search"
@@ -52,21 +54,33 @@
             android:paddingVertical="@dimen/_8dp"
             android:textColor="@color/black"
             android:textColorHint="@color/activitySearch.grayBlack"
+            android:textCursorDrawable="@color/blue"
             tools:ignore="TouchTargetSizeCheck">
 
         </EditText>
 
         <ImageView
-            android:id="@+id/clearIcon"
+            android:id="@+id/activity_search_clearIcon"
             android:layout_gravity="end|center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/search"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:paddingVertical="@dimen/_12dp"
+            android:paddingHorizontal="@dimen/_14dp"
+            android:src="@drawable/clear"
+            android:background="@drawable/rounded_background"
             android:backgroundTint="@color/activitySearch.backgroundGrayWhite"
             android:visibility="gone" />
 
 
     </FrameLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/activity_search_recyclerView"
+        android:layout_marginTop="@dimen/_16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </androidx.recyclerview.widget.RecyclerView>
 
 </androidx.appcompat.widget.LinearLayoutCompat>
