@@ -23,6 +23,7 @@ class ActivitySettings : AppCompatActivity() {
         setContentView(R.layout.activity_settings)
         initViews()
         setOnClick()
+
     }
 
     private fun initViews() {
@@ -74,14 +75,15 @@ class ActivitySettings : AppCompatActivity() {
             }
             startActivity(intent)
         }
-
         buttonBack.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
         }
-        switch.setOnClickListener { // TODO:   }
+        switch.setOnClickListener {
             support.setOnClickListener {
-                // TODO:
+                // TODO:дописать свитчер
             }
+
         }
+
     }
 }

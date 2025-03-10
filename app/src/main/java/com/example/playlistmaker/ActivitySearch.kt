@@ -6,14 +6,24 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlin.random.Random
+import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Query
+import java.io.IOException
 
 class ActivitySearch : AppCompatActivity() {
 
@@ -22,45 +32,89 @@ class ActivitySearch : AppCompatActivity() {
     private lateinit var editText: EditText
     private lateinit var clearButton: ImageView
     private lateinit var recycler: RecyclerView
+    private lateinit var adapter: AdapterSearsh
+    private lateinit var imageError: ImageView
+    private lateinit var buttonUpdate: Button
+    private lateinit var textError: TextView
+    private var imageResource: Int = R.drawable.no_tracks
+    private var textResource: Int = R.string.no_track
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(ENTERED_TEXT, countValue)
+        outState.putInt(RECYCLER_VISIBILITY, recycler.visibility)
+        outState.putInt(IMAGE_ERROR_VISIBILITY, imageError.visibility)
+        outState.putInt(IMAGE_ERROR_IMAGE_RESOURCE, imageResource)
+        outState.putInt(TEXT_ERROR_VISIBILITY, textError.visibility)
+        outState.putInt(TEXT_ERROR_RESOURCE, textResource)
+        outState.putInt(BUTTON_UPDATE_VISIBILITY, buttonUpdate.visibility)
     }
 
     companion object {
         const val ENTERED_TEXT = "ENTERED_TEXT"
+        const val RECYCLER_VISIBILITY = "RECYCLER_VISIBILITY"
+        const val IMAGE_ERROR_VISIBILITY = "IMAGE_ERROR_VISIBILITY"
+        const val IMAGE_ERROR_IMAGE_RESOURCE = "IMAGE_ERROR_IMAGE_RESOURCE"
+        const val TEXT_ERROR_VISIBILITY = "TEXT_ERROR_VISIBILITY"
+        const val TEXT_ERROR_RESOURCE = "TEXT_ERROR_RESOURCE"
+        const val BUTTON_UPDATE_VISIBILITY = "BUTTON_UPDATE_VISIBILITY"
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        countValue = savedInstanceState.getString(ENTERED_TEXT, countValue)
+        countValue = savedInstanceState.getString(ENTERED_TEXT, "")
+        recycler.visibility = savedInstanceState.getInt(RECYCLER_VISIBILITY, View.VISIBLE)
+        imageError.visibility = savedInstanceState.getInt(IMAGE_ERROR_VISIBILITY, View.GONE)
+        imageError.setImageResource(savedInstanceState.getInt(IMAGE_ERROR_IMAGE_RESOURCE, imageResource))
+        textError.visibility = savedInstanceState.getInt(TEXT_ERROR_VISIBILITY, View.GONE)
+        buttonUpdate.visibility = savedInstanceState.getInt(BUTTON_UPDATE_VISIBILITY, View.GONE)
+        editText.setText(countValue)
+        textError.setText(savedInstanceState.getInt(TEXT_ERROR_RESOURCE, textResource))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
         initViews()
-        setOnClick(savedInstanceState)
+        setOnClick()
         editText.addTextChangedListener(createTextWatcher())
-        createRecycler(recycler)
-    }
+        editText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                hideKeyboard(editText)
+                performSearch()
+                true
+            } else {
+                false
+            }
+        }
 
+        adapter = AdapterSearsh(emptyList())
+        recycler.layoutManager = LinearLayoutManager(this)
+        recycler.adapter = adapter
+    }
 
     private fun initViews() {
         buttonBack = findViewById(R.id.activity_search_button_back)
         editText = findViewById(R.id.activity_search_editText)
         clearButton = findViewById(R.id.activity_search_clearIcon)
         recycler = findViewById(R.id.activity_search_recyclerView)
+        imageError = findViewById(R.id.activity_search_imageView_Error)
+        buttonUpdate = findViewById(R.id.activity_search_button_update)
+        textError = findViewById(R.id.activity_search_textView_Error)
     }
 
-    private fun setOnClick(savedInstanceState: Bundle?) {
+    private fun setOnClick() {
         buttonBack.setOnClickListener { startActivity(Intent(this, MainActivity::class.java)) }
 
         clearButton.setOnClickListener {
             editText.setText("")
-            View.GONE
+            clearButton.visibility = View.GONE
+            recycler.visibility = View.GONE
             hideKeyboard(editText)
+        }
+
+        buttonUpdate.setOnClickListener{
+            performSearch()
         }
     }
 
@@ -77,8 +131,6 @@ class ActivitySearch : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 // TODO:
-
-
             }
         }
     }
@@ -97,52 +149,71 @@ class ActivitySearch : AppCompatActivity() {
         }
     }
 
-    private fun createArrayTrack(): Array<Track> {
-        val arrayList = arrayOf(
-            Track(
-                "Smells Like Teen Spirit",
-                "Nirvana",
-                "5:01",
-                "https://is5-ssl.mzstatic.com/image/thumb/Music115/v4/7b/58/c2/7b58c21a-2b51-2bb2-e59a-9bb9b96ad8c3/00602567924166.rgb.jpg/100x100bb.jpg"
-            ),
-            Track(
-                "Billie Jean",
-                "Michael Jackson",
-                "4:35",
-                "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/3d/9d/38/3d9d3811-71f0-3a0e-1ada-3004e56ff852/827969428726.jpg/100x100bb.jpg"
-            ),
-            Track(
-                "Stayin' Alive",
-                "Bee Gees",
-                "4:10",
-                "https://is4-ssl.mzstatic.com/image/thumb/Music115/v4/1f/80/1f/1f801fc1-8c0f-ea3e-d3e5-387c6619619e/16UMGIM86640.rgb.jpg/100x100bb.jpg"
-            ),
-            Track(
-                "Whole Lotta Love",
-                "Led Zeppelin",
-                "5:33",
-                "https://is2-ssl.mzstatic.com/image/thumb/Music62/v4/7e/17/e3/7e17e33f-2efa-2a36-e916-7f808576cf6b/mzm.fyigqcbs.jpg/100x100bb.jpg"
-            ),
-            Track(
-                "Sweet Child O'Mine",
-                "Guns N' Roses",
-                "5:03",
-                "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/a0/4d/c4/a04dc484-03cc-02aa-fa82-5334fcb4bc16/18UMGIM24878.rgb.jpg/100x100bb.jpg "
-            )
-        )
-        return arrayList
+    private fun performSearch() {
+        adapter.updateTracks(emptyList())
+        recycler.visibility = View.GONE
+        imageError.visibility = View.GONE
+        textError.visibility = View.GONE
+        buttonUpdate.visibility = View.GONE
+        lifecycleScope.launch {
+            try {
+                val tracks = apiConnection()
+                println(tracks.results)
+                if (tracks.results.isEmpty()){
+                    imageResource = R.drawable.no_tracks
+                    imageError.setImageResource(imageResource)
+                    textResource = R.string.no_track
+                    textError.setText(textResource)
+                    imageError.visibility = View.VISIBLE
+                    textError.visibility = View.VISIBLE
+                } else {
+                    recycler.visibility = View.VISIBLE
+                    adapter.updateTracks(tracks.results)}
+
+            } catch (e: IOException) {
+                // Обработка ошибок, связанных с сетью
+                internetErrorHandling()
+            } catch (e: HttpException) {
+                // Обработка HTTP-ошибок (4xx, 5xx)
+                internetErrorHandling()
+            } catch (e: Exception) {
+                // Обработка всех остальных ошибок
+                println("Unexpected error: ${e.message}")
+            }
+        }
     }
 
-    private fun createRecycler(recycler: RecyclerView) {
-        val track = createArrayTrack()
-        recycler.layoutManager = LinearLayoutManager(this)
-        recycler.adapter = AdapterSearsh(
-            tracks = List(5) {
-                val tr = track[Random.nextInt(0, track.size)]
-                Track(tr.trackName, tr.artistName, tr.trackTime, tr.artworkUrl100)
+    private fun internetErrorHandling(){
+        imageResource = R.drawable.no_internet
+        imageError.setImageResource(imageResource)
+        textResource = R.string.no_internet
+        textError.setText(textResource)
+        imageError.visibility = View.VISIBLE
+        textError.visibility = View.VISIBLE
+        buttonUpdate.visibility = View.VISIBLE
+    }
 
-            }
-        )
+    private suspend fun apiConnection(): TrackResponse {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://itunes.apple.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
 
+        val apiService = retrofit.create(ApiService::class.java)
+        return apiService.getTrack(countValue)
     }
 }
+
+interface ApiService {
+    @GET("/search?entity=song")
+    suspend fun getTrack(@Query("term") track: String ): TrackResponse
+}
+
+data class TrackResponse(
+    val results: List<Track>
+)
+
+data class Track(val trackName: String,
+                 val artistName:String,
+                 val trackTimeMillis: Long,
+                 val artworkUrl100:String)

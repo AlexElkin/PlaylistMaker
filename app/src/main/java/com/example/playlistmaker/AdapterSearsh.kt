@@ -1,6 +1,5 @@
 package com.example.playlistmaker
 
-import android.content.Context
 import android.view.LayoutInflater
 import com.bumptech.glide.Glide
 import android.view.View
@@ -11,8 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 
 class AdapterSearsh(
-    private val tracks: List<Track>
+    private var tracks: List<Track>
 ) : RecyclerView.Adapter<AdapterSearsh.ViewHolderSearsh>() {
+
+    fun updateTracks(newTracks: List<Track>) {
+        tracks = newTracks
+        notifyDataSetChanged() // Уведомляем RecyclerView об изменении данных
+    }
+
     class ViewHolderSearsh(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val trackName: TextView
         private val artistName: TextView
@@ -26,16 +31,31 @@ class AdapterSearsh(
             imageButton = itemView.findViewById(R.id.track_view_logo)
         }
 
+        private fun formatTrackTime(milliseconds: Long): String {
+            val totalSeconds = milliseconds / 1000
+            val minutes = totalSeconds / 60
+            val seconds = totalSeconds % 60
+            return String.format("%02d:%02d", minutes, seconds)
+        }
+
         fun bind(model: Track) {
             trackName.text = model.trackName
             artistName.text = model.artistName
-            trackTime.text = model.trackTime
+            trackTime.text = formatTrackTime(model.trackTimeMillis)
             try {
-                Glide.with(imageButton.context).load(model.artworkUrl100).transform(
+                Glide.with(imageButton.context)
+                    .load(model.artworkUrl100)
+                    .transform(
                     RoundedCornersTransformation(2, 0)
-                ).into(imageButton)
+                )
+                    .into(imageButton)
             } catch (e: Exception) {
-                imageButton.setImageResource(R.drawable.baseline_sync_problem_24)
+                Glide.with(imageButton.context)
+                    .load(R.drawable.baseline_sync_problem_24)
+                    .transform(
+                        RoundedCornersTransformation(2, 0)
+                    )
+                    .into(imageButton)
             }
 
         }
@@ -51,4 +71,6 @@ class AdapterSearsh(
     override fun onBindViewHolder(holder: ViewHolderSearsh, position: Int) {
         holder.bind(tracks[position])
     }
+
+
 }

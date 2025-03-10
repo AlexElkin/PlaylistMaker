@@ -48,6 +48,8 @@
             android:drawableStart="@drawable/magnifier"
             android:drawablePadding="4dp"
             android:hint="@string/search"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
             android:inputType="text"
             android:maxLines="1"
             android:paddingHorizontal="14dp"
@@ -83,4 +85,35 @@
 
     </androidx.recyclerview.widget.RecyclerView>
 
+    <ImageView
+        android:id="@+id/activity_search_imageView_Error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src = "@drawable/no_internet"
+        android:layout_marginTop="100dp"
+        android:layout_gravity="center"
+        android:visibility="gone">
+    </ImageView>
+    <TextView
+        android:id="@+id/activity_search_textView_Error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_internet"
+        android:textSize="19sp"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:visibility="gone">
+    </TextView>
+    <Button
+        android:id="@+id/activity_search_button_update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Обновить"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/iconColorBlackWhite"
+        android:visibility="gone">
+
+    </Button>
 </androidx.appcompat.widget.LinearLayoutCompat>
