@@ -1,14 +1,15 @@
 package com.example.playlistmaker
 
+import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
+import androidx.core.net.toUri
 
 class ActivitySettings : AppCompatActivity() {
 
@@ -33,6 +34,7 @@ class ActivitySettings : AppCompatActivity() {
         support = findViewById(R.id.activity_settings_textView_write_to_support)
         userAgreement = findViewById(R.id.activity_settings_textView_user_agreement)
     }
+    @SuppressLint("QueryPermissionsNeeded")
     private fun setOnClick(){
         support.setOnClickListener {
             val email = getString(R.string.email)
@@ -40,7 +42,7 @@ class ActivitySettings : AppCompatActivity() {
             val text = getString(R.string.text_mail)
             val intent = Intent().apply {
                 action = Intent.ACTION_SENDTO
-                data = Uri.parse("mailto:")
+                data = "mailto:".toUri()
                 putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
                 putExtra(Intent.EXTRA_SUBJECT, subject)
                 putExtra(Intent.EXTRA_TEXT, text)
@@ -71,7 +73,7 @@ class ActivitySettings : AppCompatActivity() {
         userAgreement.setOnClickListener {
             val intent = Intent().apply {
                 action = Intent.ACTION_VIEW
-                data = Uri.parse(getString(R.string.link_practicum_offer))
+                data = getString(R.string.link_practicum_offer).toUri()
             }
             startActivity(intent)
         }
