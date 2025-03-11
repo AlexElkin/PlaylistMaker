@@ -102,7 +102,7 @@ class ActivitySearch : AppCompatActivity() {
     }
 
     private fun setOnClick() {
-        buttonBack.setOnClickListener { startActivity(Intent(this, MainActivity::class.java)) }
+        buttonBack.setOnClickListener { finish() }
 
         clearButton.setOnClickListener {
             editText.setText("")

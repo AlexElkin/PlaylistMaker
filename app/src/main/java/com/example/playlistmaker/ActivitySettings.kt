@@ -78,7 +78,7 @@ class ActivitySettings : AppCompatActivity() {
             startActivity(intent)
         }
         buttonBack.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
+            finish()
         }
         switch.setOnClickListener {
             support.setOnClickListener {
