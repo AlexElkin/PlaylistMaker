@@ -1,5 +1,6 @@
 package com.example.playlistmaker
 
+import android.text.TextUtils
 import android.view.LayoutInflater
 import com.bumptech.glide.Glide
 import android.view.View
@@ -38,10 +39,21 @@ class AdapterSearsh(
             return String.format("%02d:%02d", minutes, seconds)
         }
 
+        private fun setMaxLines() {
+            trackName.maxLines = 1
+            artistName.maxLines = 1
+            trackTime.maxLines = 1
+
+            trackName.ellipsize = TextUtils.TruncateAt.END
+            artistName.ellipsize = TextUtils.TruncateAt.END
+            trackTime.ellipsize = TextUtils.TruncateAt.END
+        }
+
         fun bind(model: Track) {
             trackName.text = model.trackName
             artistName.text = model.artistName
             trackTime.text = formatTrackTime(model.trackTimeMillis)
+            setMaxLines()
             try {
                 Glide.with(imageButton.context)
                     .load(model.artworkUrl100)

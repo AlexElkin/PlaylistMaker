@@ -21,8 +21,6 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Query
 import java.io.IOException
 
 class ActivitySearch : AppCompatActivity() {
@@ -108,14 +106,22 @@ class ActivitySearch : AppCompatActivity() {
 
         clearButton.setOnClickListener {
             editText.setText("")
-            clearButton.visibility = View.GONE
-            recycler.visibility = View.GONE
+            clearingScreen()
             hideKeyboard(editText)
         }
 
         buttonUpdate.setOnClickListener{
             performSearch()
         }
+    }
+
+    private fun clearingScreen(){
+
+        clearButton.visibility = View.GONE
+        recycler.visibility = View.GONE
+        imageError.visibility = View.GONE
+        textError.visibility = View.GONE
+        buttonUpdate.visibility = View.GONE
     }
 
     private fun createTextWatcher(): TextWatcher {
@@ -125,8 +131,14 @@ class ActivitySearch : AppCompatActivity() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                countValue = s.toString()
-                clearButton.visibility = clearButtonVisibility(s)
+                if (s != null) {
+                    if (s.isEmpty()){
+                        clearingScreen()
+                    }
+                    countValue = s.toString()
+                    clearButton.visibility = clearButtonVisibility(s)
+                }
+
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -204,16 +216,4 @@ class ActivitySearch : AppCompatActivity() {
     }
 }
 
-interface ApiService {
-    @GET("/search?entity=song")
-    suspend fun getTrack(@Query("term") track: String ): TrackResponse
-}
 
-data class TrackResponse(
-    val results: List<Track>
-)
-
-data class Track(val trackName: String,
-                 val artistName:String,
-                 val trackTimeMillis: Long,
-                 val artworkUrl100:String)

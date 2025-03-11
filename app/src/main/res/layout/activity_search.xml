@@ -56,8 +56,8 @@
             android:paddingVertical="@dimen/_8dp"
             android:textColor="@color/black"
             android:textColorHint="@color/activitySearch.grayBlack"
-            android:textCursorDrawable="@color/blue"
-            tools:ignore="TouchTargetSizeCheck">
+            tools:ignore="TouchTargetSizeCheck"
+            android:textCursorDrawable="@drawable/cursor_drawable">
 
         </EditText>
 
