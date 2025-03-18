@@ -38,8 +38,8 @@
         android:text="@string/dark_theme"
         android:textSize="@dimen/_16sp"
         android:fontFamily="@font/ys_display_regular"
-        app:thumbTint="@color/switch_thumb_color"
-        app:trackTint="@color/switch_track_color"
+        android:thumbTint="@color/switch_thumb_color"
+        android:trackTint="@color/switch_track_color"
         android:minWidth="@dimen/_8dp"
         android:maxWidth="300dp">
 

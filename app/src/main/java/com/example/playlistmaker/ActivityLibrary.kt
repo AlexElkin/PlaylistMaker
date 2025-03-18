@@ -1,11 +1,10 @@
-package com.example.playlistmaker.activity
+package com.example.playlistmaker
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.playlistmaker.R
 
 class ActivityLibrary : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
