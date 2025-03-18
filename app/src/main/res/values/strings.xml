@@ -22,4 +22,6 @@
     <string name="logo" translatable="false">logo</string>
     <string name="no_internet" translatable="false">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
     <string name="no_track" translatable="false">Ничего не нашлось</string>
+    <string name="You_were_looking">Вы искали</string>
+    <string name="clear_history">Очистить историю</string>
 </resources>
