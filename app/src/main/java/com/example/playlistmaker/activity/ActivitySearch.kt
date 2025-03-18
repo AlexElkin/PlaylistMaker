@@ -102,11 +102,16 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
                 createHistory()
             }
         }
+
         adapter = AdapterSearsh(emptyList(), this)
+        startEditText()
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
     }
-
+    private fun startEditText(){
+        editText.requestFocus()
+        createHistory()
+    }
     private fun createHistory(){
         val tracks = SearchHistory(sharedPreferences).read()
         if (tracks != null && tracks.isNotEmpty()) {
@@ -169,6 +174,7 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
                 if (s != null) {
                     if (s.isEmpty()) {
                         clearingScreen()
+                        createHistory()
                     } else {
                         textYouWereLooking.visibility = View.GONE
                         recycler.visibility = View.GONE
