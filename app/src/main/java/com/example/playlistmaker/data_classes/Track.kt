@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.data_classes
 
 data class Track(val trackName: String,
                  val artistName:String,

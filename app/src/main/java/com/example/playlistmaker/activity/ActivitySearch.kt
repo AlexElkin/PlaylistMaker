@@ -1,7 +1,6 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.activity
 
-import android.content.Context
-import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -17,13 +16,27 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.BUTTON_UPDATE_VISIBILITY
+import com.example.playlistmaker.ENTERED_TEXT
+import com.example.playlistmaker.IMAGE_ERROR_IMAGE_RESOURCE
+import com.example.playlistmaker.IMAGE_ERROR_VISIBILITY
+import com.example.playlistmaker.MY_SAVES
+import com.example.playlistmaker.adapters.AdapterSearsh
+import com.example.playlistmaker.api.ApiService
+import com.example.playlistmaker.R
+import com.example.playlistmaker.RECYCLER_VISIBILITY
+import com.example.playlistmaker.SearchHistory
+import com.example.playlistmaker.TEXT_ERROR_RESOURCE
+import com.example.playlistmaker.TEXT_ERROR_VISIBILITY
+import com.example.playlistmaker.data_classes.Track
+import com.example.playlistmaker.data_classes.TrackResponse
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 
-class ActivitySearch : AppCompatActivity() {
+class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
 
     private var countValue: String = ""
     private lateinit var buttonBack: ImageButton
@@ -33,9 +46,12 @@ class ActivitySearch : AppCompatActivity() {
     private lateinit var adapter: AdapterSearsh
     private lateinit var imageError: ImageView
     private lateinit var buttonUpdate: Button
+    private lateinit var clearHistory : Button
     private lateinit var textError: TextView
+    private lateinit var textYouWereLooking: TextView
     private var imageResource: Int = R.drawable.no_tracks
     private var textResource: Int = R.string.no_track
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -48,22 +64,17 @@ class ActivitySearch : AppCompatActivity() {
         outState.putInt(BUTTON_UPDATE_VISIBILITY, buttonUpdate.visibility)
     }
 
-    companion object {
-        const val ENTERED_TEXT = "ENTERED_TEXT"
-        const val RECYCLER_VISIBILITY = "RECYCLER_VISIBILITY"
-        const val IMAGE_ERROR_VISIBILITY = "IMAGE_ERROR_VISIBILITY"
-        const val IMAGE_ERROR_IMAGE_RESOURCE = "IMAGE_ERROR_IMAGE_RESOURCE"
-        const val TEXT_ERROR_VISIBILITY = "TEXT_ERROR_VISIBILITY"
-        const val TEXT_ERROR_RESOURCE = "TEXT_ERROR_RESOURCE"
-        const val BUTTON_UPDATE_VISIBILITY = "BUTTON_UPDATE_VISIBILITY"
-    }
-
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         countValue = savedInstanceState.getString(ENTERED_TEXT, "")
         recycler.visibility = savedInstanceState.getInt(RECYCLER_VISIBILITY, View.VISIBLE)
         imageError.visibility = savedInstanceState.getInt(IMAGE_ERROR_VISIBILITY, View.GONE)
-        imageError.setImageResource(savedInstanceState.getInt(IMAGE_ERROR_IMAGE_RESOURCE, imageResource))
+        imageError.setImageResource(
+            savedInstanceState.getInt(
+                IMAGE_ERROR_IMAGE_RESOURCE,
+                imageResource
+            )
+        )
         textError.visibility = savedInstanceState.getInt(TEXT_ERROR_VISIBILITY, View.GONE)
         buttonUpdate.visibility = savedInstanceState.getInt(BUTTON_UPDATE_VISIBILITY, View.GONE)
         editText.setText(countValue)
@@ -73,6 +84,7 @@ class ActivitySearch : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+        sharedPreferences = getSharedPreferences(MY_SAVES, MODE_PRIVATE)
         initViews()
         setOnClick()
         editText.addTextChangedListener(createTextWatcher())
@@ -85,10 +97,29 @@ class ActivitySearch : AppCompatActivity() {
                 false
             }
         }
+        editText.setOnFocusChangeListener { view, hasFocus ->
+            if (hasFocus && countValue.isEmpty()) {
+                createHistory()
+            }
+        }
 
-        adapter = AdapterSearsh(emptyList())
+        adapter = AdapterSearsh(emptyList(), this)
+        startEditText()
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
+    }
+    private fun startEditText(){
+        editText.requestFocus()
+        createHistory()
+    }
+    private fun createHistory(){
+        val tracks = SearchHistory(sharedPreferences).read()
+        if (tracks != null && tracks.isNotEmpty()) {
+            textYouWereLooking.visibility = View.VISIBLE
+            clearHistory.visibility = View.VISIBLE
+            recycler.visibility = View.VISIBLE
+            adapter.updateTracks(tracks.reversed<Track>())
+        }
     }
 
     private fun initViews() {
@@ -99,23 +130,32 @@ class ActivitySearch : AppCompatActivity() {
         imageError = findViewById(R.id.activity_search_imageView_Error)
         buttonUpdate = findViewById(R.id.activity_search_button_update)
         textError = findViewById(R.id.activity_search_textView_Error)
+        textYouWereLooking = findViewById(R.id.activity_search_TextView_You_were_looking)
+        clearHistory = findViewById(R.id.activity_search_clear_history)
     }
 
     private fun setOnClick() {
         buttonBack.setOnClickListener { finish() }
-
+        clearHistory.setOnClickListener {
+            textYouWereLooking.visibility = View.GONE
+            SearchHistory(sharedPreferences).removeHistory()
+            recycler.visibility = View.GONE
+            clearHistory.visibility = View.GONE
+        }
         clearButton.setOnClickListener {
             editText.setText("")
             clearingScreen()
+            createHistory()
             hideKeyboard(editText)
+
         }
 
-        buttonUpdate.setOnClickListener{
+        buttonUpdate.setOnClickListener {
             performSearch()
         }
     }
 
-    private fun clearingScreen(){
+    private fun clearingScreen() {
 
         clearButton.visibility = View.GONE
         recycler.visibility = View.GONE
@@ -132,8 +172,13 @@ class ActivitySearch : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (s != null) {
-                    if (s.isEmpty()){
+                    if (s.isEmpty()) {
                         clearingScreen()
+                        createHistory()
+                    } else {
+                        textYouWereLooking.visibility = View.GONE
+                        recycler.visibility = View.GONE
+                        clearHistory.visibility = View.GONE
                     }
                     countValue = s.toString()
                     clearButton.visibility = clearButtonVisibility(s)
@@ -149,7 +194,7 @@ class ActivitySearch : AppCompatActivity() {
 
     private fun hideKeyboard(view: View) {
         val inputMethodManager =
-            getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
         inputMethodManager?.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
@@ -167,11 +212,11 @@ class ActivitySearch : AppCompatActivity() {
         imageError.visibility = View.GONE
         textError.visibility = View.GONE
         buttonUpdate.visibility = View.GONE
+        textYouWereLooking.visibility = View.GONE
         lifecycleScope.launch {
             try {
                 val tracks = apiConnection()
-                println(tracks.results)
-                if (tracks.results.isEmpty()){
+                if (tracks.results.isEmpty()) {
                     imageResource = R.drawable.no_tracks
                     imageError.setImageResource(imageResource)
                     textResource = R.string.no_track
@@ -180,7 +225,9 @@ class ActivitySearch : AppCompatActivity() {
                     textError.visibility = View.VISIBLE
                 } else {
                     recycler.visibility = View.VISIBLE
-                    adapter.updateTracks(tracks.results)}
+                    adapter.updateTracks(tracks.results)
+
+                }
 
             } catch (e: IOException) {
                 // Обработка ошибок, связанных с сетью
@@ -195,7 +242,7 @@ class ActivitySearch : AppCompatActivity() {
         }
     }
 
-    private fun internetErrorHandling(){
+    private fun internetErrorHandling() {
         imageResource = R.drawable.no_internet
         imageError.setImageResource(imageResource)
         textResource = R.string.no_internet
@@ -213,6 +260,10 @@ class ActivitySearch : AppCompatActivity() {
 
         val apiService = retrofit.create(ApiService::class.java)
         return apiService.getTrack(countValue)
+    }
+
+    override fun onItemClick(track: Track) {
+        SearchHistory(sharedPreferences).addTrack(track)
     }
 }
 

@@ -1,5 +1,6 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.adapters
 
+import android.annotation.SuppressLint
 import android.text.TextUtils
 import android.view.LayoutInflater
 import com.bumptech.glide.Glide
@@ -8,15 +9,23 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.R
+import com.example.playlistmaker.data_classes.Track
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 
 class AdapterSearsh(
-    private var tracks: List<Track>
+    private var tracks: List<Track>,
+    private val onItemClickListener: OnItemClickListener
 ) : RecyclerView.Adapter<AdapterSearsh.ViewHolderSearsh>() {
 
+    interface OnItemClickListener {
+        fun onItemClick(track: Track)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
     fun updateTracks(newTracks: List<Track>) {
         tracks = newTracks
-        notifyDataSetChanged() // Уведомляем RecyclerView об изменении данных
+        notifyDataSetChanged()
     }
 
     class ViewHolderSearsh(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -32,6 +41,7 @@ class AdapterSearsh(
             imageButton = itemView.findViewById(R.id.track_view_logo)
         }
 
+        @SuppressLint("DefaultLocale")
         private fun formatTrackTime(milliseconds: Long): String {
             val totalSeconds = milliseconds / 1000
             val minutes = totalSeconds / 60
@@ -58,8 +68,8 @@ class AdapterSearsh(
                 Glide.with(imageButton.context)
                     .load(model.artworkUrl100)
                     .transform(
-                    RoundedCornersTransformation(2, 0)
-                )
+                        RoundedCornersTransformation(2, 0)
+                    )
                     .into(imageButton)
             } catch (e: Exception) {
                 Glide.with(imageButton.context)
@@ -69,7 +79,6 @@ class AdapterSearsh(
                     )
                     .into(imageButton)
             }
-
         }
     }
 
@@ -81,8 +90,10 @@ class AdapterSearsh(
     override fun getItemCount() = tracks.size
 
     override fun onBindViewHolder(holder: ViewHolderSearsh, position: Int) {
-        holder.bind(tracks[position])
+        val track = tracks[position]
+        holder.bind(track)
+        holder.itemView.setOnClickListener {
+            onItemClickListener.onItemClick(track)
+        }
     }
-
-
 }
