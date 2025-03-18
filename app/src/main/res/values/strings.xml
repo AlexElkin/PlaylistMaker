@@ -16,12 +16,8 @@
     <string name="text_mail" translatable="false">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="theme_mail" translatable="false">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="email" translatable="false">saschelckin@yandex.ru</string>
-    <string name="enter_request" translatable="false">Введите запрос</string>
-    <string name="search_label" translatable="false">надпись поиск</string>
-    <string name="view_arrow" translatable="false">view arrow</string>
-    <string name="logo" translatable="false">logo</string>
-    <string name="no_internet" translatable="false">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
-    <string name="no_track" translatable="false">Ничего не нашлось</string>
-    <string name="You_were_looking">Вы искали</string>
-    <string name="clear_history">Очистить историю</string>
+    <string name="enter_request">Введите запрос</string>
+    <string name="search_label">надпись поиск</string>
+    <string name="view_arrow">view arrow</string>
+    <string name="logo">logo</string>
 </resources>

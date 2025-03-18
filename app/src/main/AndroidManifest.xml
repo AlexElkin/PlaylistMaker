@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:name=".App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -13,18 +12,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true">
         <activity
-            android:name=".activity.ActivitySearch"
+            android:name=".ActivitySearch"
             android:exported="false"
             android:theme="@style/Base.Theme.PlaylistMaker.ActivitySettings"/>
         <activity
-            android:name=".activity.ActivityLibrary"
+            android:name=".ActivityLibrary"
             android:exported="false" />
         <activity
-            android:name=".activity.ActivitySettings"
+            android:name=".ActivitySettings"
             android:exported="false"
             android:theme="@style/Base.Theme.PlaylistMaker.ActivitySettings" />
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Base.Theme.PlaylistMaker.ActivityMain">
             <intent-filter>
