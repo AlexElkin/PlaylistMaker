@@ -1,21 +1,30 @@
 package com.example.playlistmaker.adapters
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
 import android.text.TextUtils
 import android.view.LayoutInflater
-import com.bumptech.glide.Glide
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.playlistmaker.MILLISECONDS_IN_SECOND
 import com.example.playlistmaker.R
+import com.example.playlistmaker.SECONDS_IN_MINUTE
+import com.example.playlistmaker.TIME_FORMAT
+import com.example.playlistmaker.TRACK
+import com.example.playlistmaker.activity.AudioPlayerActivity
 import com.example.playlistmaker.data_classes.Track
+import com.google.gson.Gson
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 
 class AdapterSearsh(
     private var tracks: List<Track>,
-    private val onItemClickListener: OnItemClickListener
+    private val onItemClickListener: OnItemClickListener,
+    private val context: Context
 ) : RecyclerView.Adapter<AdapterSearsh.ViewHolderSearsh>() {
 
     interface OnItemClickListener {
@@ -29,24 +38,17 @@ class AdapterSearsh(
     }
 
     class ViewHolderSearsh(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val trackName: TextView
-        private val artistName: TextView
-        private val trackTime: TextView
-        private val imageButton: ImageButton
-
-        init {
-            trackName = itemView.findViewById(R.id.trackName)
-            artistName = itemView.findViewById(R.id.artistName)
-            trackTime = itemView.findViewById(R.id.trackTime)
-            imageButton = itemView.findViewById(R.id.track_view_logo)
-        }
+        private val trackName: TextView = itemView.findViewById(R.id.trackName)
+        private val artistName: TextView = itemView.findViewById(R.id.artistName)
+        private val trackTime: TextView = itemView.findViewById(R.id.trackTime)
+        private val imageButton: ImageButton = itemView.findViewById(R.id.track_view_logo)
 
         @SuppressLint("DefaultLocale")
         private fun formatTrackTime(milliseconds: Long): String {
-            val totalSeconds = milliseconds / 1000
-            val minutes = totalSeconds / 60
-            val seconds = totalSeconds % 60
-            return String.format("%02d:%02d", minutes, seconds)
+            val totalSeconds = milliseconds / MILLISECONDS_IN_SECOND
+            val minutes = totalSeconds / SECONDS_IN_MINUTE
+            val seconds = totalSeconds % SECONDS_IN_MINUTE
+            return String.format(TIME_FORMAT, minutes, seconds)
         }
 
         private fun setMaxLines() {
@@ -64,21 +66,13 @@ class AdapterSearsh(
             artistName.text = model.artistName
             trackTime.text = formatTrackTime(model.trackTimeMillis)
             setMaxLines()
-            try {
-                Glide.with(imageButton.context)
-                    .load(model.artworkUrl100)
-                    .transform(
-                        RoundedCornersTransformation(2, 0)
-                    )
-                    .into(imageButton)
-            } catch (e: Exception) {
-                Glide.with(imageButton.context)
-                    .load(R.drawable.baseline_sync_problem_24)
-                    .transform(
-                        RoundedCornersTransformation(2, 0)
-                    )
-                    .into(imageButton)
-            }
+
+            Glide.with(imageButton.context)
+                .load(model.artworkUrl100)
+                .placeholder(R.drawable.baseline_sync_problem_24)
+                .error(R.drawable.baseline_sync_problem_24)
+                .transform(RoundedCornersTransformation(2, 0))
+                .into(imageButton)
         }
     }
 
@@ -94,6 +88,9 @@ class AdapterSearsh(
         holder.bind(track)
         holder.itemView.setOnClickListener {
             onItemClickListener.onItemClick(track)
+            val intent = Intent(context, AudioPlayerActivity::class.java)
+            intent.putExtra(TRACK, track)
+            context.startActivity(intent)
         }
     }
 }

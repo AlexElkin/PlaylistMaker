@@ -103,11 +103,12 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
             }
         }
 
-        adapter = AdapterSearsh(emptyList(), this)
+        adapter = AdapterSearsh(emptyList(),this,this)
         startEditText()
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
     }
+
     private fun startEditText(){
         editText.requestFocus()
         createHistory()
@@ -257,7 +258,6 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
             .baseUrl("https://itunes.apple.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
         val apiService = retrofit.create(ApiService::class.java)
         return apiService.getTrack(countValue)
     }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="iconColorBlackWhite">#FFFFFFFF</color>
+    <color name="iconColorBlackWhite40">#40FFFFFF</color>
     <color name="iconColorWhiteBlack">#1A1B22</color>
     <color name="iconColorGrayWhite">#FFFFFFFF</color>
     <color name="activitySearch.grayBlack">#1A1B22</color>

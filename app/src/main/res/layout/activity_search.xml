@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@drawable/rounded_background"
+        android:background="@drawable/rounded_background_8dp"
         android:layout_marginHorizontal="@dimen/_16dp"
         android:layout_marginVertical="@dimen/_8dp"
         >
@@ -70,7 +70,7 @@
             android:paddingVertical="@dimen/_12dp"
             android:paddingHorizontal="@dimen/_14dp"
             android:src="@drawable/clear"
-            android:background="@drawable/rounded_background"
+            android:background="@drawable/rounded_background_8dp"
             android:backgroundTint="@color/activitySearch.backgroundGrayWhite"
             android:visibility="gone" />
 

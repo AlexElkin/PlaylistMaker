@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="iconColorBlackWhite">#FF000000</color>
+    <color name="iconColorBlackWhite40">#40000000</color>
     <color name="iconColorWhiteBlack">#FFFFFFFF</color>
     <color name="iconColorGrayWhite">#AEAFB4</color>
     <color name="iconColorGrayBlack">#AEAFB4</color>
