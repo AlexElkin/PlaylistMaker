@@ -11,7 +11,10 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.playlistmaker.MILLISECONDS_IN_SECOND
 import com.example.playlistmaker.R
+import com.example.playlistmaker.SECONDS_IN_MINUTE
+import com.example.playlistmaker.TIME_FORMAT
 import com.example.playlistmaker.TRACK
 import com.example.playlistmaker.activity.AudioPlayerActivity
 import com.example.playlistmaker.data_classes.Track
@@ -42,10 +45,10 @@ class AdapterSearsh(
 
         @SuppressLint("DefaultLocale")
         private fun formatTrackTime(milliseconds: Long): String {
-            val totalSeconds = milliseconds / 1000
-            val minutes = totalSeconds / 60
-            val seconds = totalSeconds % 60
-            return String.format("%02d:%02d", minutes, seconds)
+            val totalSeconds = milliseconds / MILLISECONDS_IN_SECOND
+            val minutes = totalSeconds / SECONDS_IN_MINUTE
+            val seconds = totalSeconds % SECONDS_IN_MINUTE
+            return String.format(TIME_FORMAT, minutes, seconds)
         }
 
         private fun setMaxLines() {
@@ -85,9 +88,8 @@ class AdapterSearsh(
         holder.bind(track)
         holder.itemView.setOnClickListener {
             onItemClickListener.onItemClick(track)
-            val intent = Intent(context, AudioPlayerActivity::class.java).apply {
-                putExtra(TRACK, Gson().toJson(track))
-            }
+            val intent = Intent(context, AudioPlayerActivity::class.java)
+            intent.putExtra(TRACK, track)
             context.startActivity(intent)
         }
     }

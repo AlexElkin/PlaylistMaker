@@ -2,6 +2,7 @@ package com.example.playlistmaker.activity
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -9,12 +10,14 @@ import com.example.playlistmaker.LIST_TRACKS
 import com.example.playlistmaker.R
 import android.content.SharedPreferences
 import android.text.TextUtils
+import android.util.TypedValue
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.transition.Visibility
 import com.bumptech.glide.Glide
+import com.example.playlistmaker.CORNER_RADIUS_DP_LOGO_500
 import com.example.playlistmaker.data_classes.Track
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -56,7 +59,7 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     private fun setValues() {
-        read().apply {
+        read()?.apply {
             trackNameView.text = trackName
             artistNameView.text = artistName
             trackTimeView.text = formatTrackTime(trackTimeMillis)
@@ -69,22 +72,23 @@ class AudioPlayerActivity : AppCompatActivity() {
             countryView.text = country
             trackNameView.isSelected = true
 
-            try {
-                Glide.with(trackViewLogo.context)
-                    .load(artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
-                    .transform(
-                        RoundedCornersTransformation(8, 0)
-                    )
+            val imageUrl = artworkUrl100.replaceAfterLast('/', "512x512bb.jpg")
+            val cornerRadiusPx = CORNER_RADIUS_DP_LOGO_500.dpToPx(trackViewLogo.context)
+            Glide.with(trackViewLogo.context)
+                    .load(imageUrl)
+                    .error(R.drawable.placeholder)
+                    .transform(RoundedCornersTransformation(cornerRadiusPx, 0))
+                    .placeholder(R.drawable.placeholder)
                     .into(trackViewLogo)
-            } catch (e: Exception) {
-                Glide.with(trackViewLogo.context)
-                    .load(R.drawable.placeholder)
-                    .transform(
-                        RoundedCornersTransformation(8, 0)
-                    )
-                    .into(trackViewLogo)
-            }
         }
+    }
+
+    private fun Float.dpToPx(context: Context): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            this,
+            context.resources.displayMetrics
+        ).toInt()
     }
 
 
@@ -101,9 +105,12 @@ class AudioPlayerActivity : AppCompatActivity() {
         buttonBackView = findViewById(R.id.AudioPlayer_button_back)
     }
 
-    private fun read(): Track {
-        val json = intent.getStringExtra(TRACK)
-        val type = object : TypeToken<Track>() {}.type
-        return Gson().fromJson(json, type)
+    private fun read(): Track? {
+        return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(TRACK, Track::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra(TRACK) as? Track
+        }
     }
 }
