@@ -3,6 +3,7 @@ package com.example.playlistmaker
 const val MY_SAVES = "my saves"
 const val THEME = "theme"
 const val LIST_TRACKS = "list tracks"
+const val TRACK = "track"
 const val ENTERED_TEXT = "ENTERED_TEXT"
 const val RECYCLER_VISIBILITY = "RECYCLER_VISIBILITY"
 const val IMAGE_ERROR_VISIBILITY = "IMAGE_ERROR_VISIBILITY"

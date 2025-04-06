@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -103,11 +104,12 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
             }
         }
 
-        adapter = AdapterSearsh(emptyList(), this)
+        adapter = AdapterSearsh(emptyList(),this,this)
         startEditText()
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
     }
+
     private fun startEditText(){
         editText.requestFocus()
         createHistory()
@@ -257,7 +259,6 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
             .baseUrl("https://itunes.apple.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
         val apiService = retrofit.create(ApiService::class.java)
         return apiService.getTrack(countValue)
     }

@@ -1,7 +1,6 @@
 package com.example.playlistmaker
 
 import android.content.SharedPreferences
-import android.util.Log
 import com.example.playlistmaker.data_classes.Track
 import com.google.gson.Gson
 import androidx.core.content.edit
