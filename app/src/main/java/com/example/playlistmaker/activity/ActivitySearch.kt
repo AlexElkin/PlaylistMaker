@@ -11,12 +11,14 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.BUTTON_UPDATE_VISIBILITY
+import com.example.playlistmaker.Debouncer
 import com.example.playlistmaker.ENTERED_TEXT
 import com.example.playlistmaker.IMAGE_ERROR_IMAGE_RESOURCE
 import com.example.playlistmaker.IMAGE_ERROR_VISIBILITY
@@ -25,6 +27,7 @@ import com.example.playlistmaker.adapters.AdapterSearsh
 import com.example.playlistmaker.api.ApiService
 import com.example.playlistmaker.R
 import com.example.playlistmaker.RECYCLER_VISIBILITY
+import com.example.playlistmaker.SEARCH_DEBOUNCE_DELAY
 import com.example.playlistmaker.SearchHistory
 import com.example.playlistmaker.TEXT_ERROR_RESOURCE
 import com.example.playlistmaker.TEXT_ERROR_VISIBILITY
@@ -49,9 +52,11 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
     private lateinit var clearHistory : Button
     private lateinit var textError: TextView
     private lateinit var textYouWereLooking: TextView
+    private lateinit var progressBar: ProgressBar
     private var imageResource: Int = R.drawable.no_tracks
     private var textResource: Int = R.string.no_track
     private lateinit var sharedPreferences: SharedPreferences
+    private val debouncer = Debouncer(SEARCH_DEBOUNCE_DELAY)
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -133,6 +138,7 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
         textError = findViewById(R.id.activity_search_textView_Error)
         textYouWereLooking = findViewById(R.id.activity_search_TextView_You_were_looking)
         clearHistory = findViewById(R.id.activity_search_clear_history)
+        progressBar = findViewById(R.id.progressBar)
     }
 
     private fun setOnClick() {
@@ -156,6 +162,7 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
         }
     }
 
+
     private fun clearingScreen() {
 
         clearButton.visibility = View.GONE
@@ -173,6 +180,8 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (s != null) {
+                    countValue = s.toString()
+                    clearButton.visibility = clearButtonVisibility(s)
                     if (s.isEmpty()) {
                         clearingScreen()
                         createHistory()
@@ -180,9 +189,9 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
                         textYouWereLooking.visibility = View.GONE
                         recycler.visibility = View.GONE
                         clearHistory.visibility = View.GONE
+                        debouncer.debounce {performSearch()}
                     }
-                    countValue = s.toString()
-                    clearButton.visibility = clearButtonVisibility(s)
+
                 }
 
             }
@@ -208,12 +217,13 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
     }
 
     private fun performSearch() {
-        adapter.updateTracks(emptyList())
+        progressBar.visibility = View.VISIBLE
         recycler.visibility = View.GONE
         imageError.visibility = View.GONE
         textError.visibility = View.GONE
         buttonUpdate.visibility = View.GONE
         textYouWereLooking.visibility = View.GONE
+        adapter.updateTracks(emptyList())
         lifecycleScope.launch {
             try {
                 val tracks = apiConnection()
@@ -240,6 +250,7 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
                 // Обработка всех остальных ошибок
                 println("Unexpected error: ${e.message}")
             }
+            progressBar.visibility = View.GONE
         }
     }
 
