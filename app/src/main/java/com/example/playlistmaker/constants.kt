@@ -15,3 +15,7 @@ const val MILLISECONDS_IN_SECOND = 1000L
 const val SECONDS_IN_MINUTE = 60
 const val TIME_FORMAT = "%02d:%02d"
 const val CORNER_RADIUS_DP_LOGO_500 = 8f
+const val SEARCH_DEBOUNCE_DELAY = 2000L
+const val REQUESTING_PLAYBACK_TIME = 300L
+const val KEY_PLAYER_POSITION = "player_position"
+const val KEY_IS_PLAYING = "is_playing"

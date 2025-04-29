@@ -1,28 +1,25 @@
 package com.example.playlistmaker.activity
 
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.example.playlistmaker.LIST_TRACKS
 import com.example.playlistmaker.R
-import android.content.SharedPreferences
-import android.text.TextUtils
+import android.media.MediaPlayer
+import android.os.Handler
+import android.os.Looper
 import android.util.TypedValue
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.transition.Visibility
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.CORNER_RADIUS_DP_LOGO_500
-import com.example.playlistmaker.data_classes.Track
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.example.playlistmaker.MY_SAVES
+import com.example.playlistmaker.KEY_IS_PLAYING
+import com.example.playlistmaker.KEY_PLAYER_POSITION
+import com.example.playlistmaker.REQUESTING_PLAYBACK_TIME
 import com.example.playlistmaker.TRACK
+import com.example.playlistmaker.data_classes.Track
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 
 class AudioPlayerActivity : AppCompatActivity() {
@@ -35,19 +32,115 @@ class AudioPlayerActivity : AppCompatActivity() {
     private lateinit var yearView: TextView
     private lateinit var genreView: TextView
     private lateinit var countryView: TextView
-    private lateinit var shared: SharedPreferences
     private lateinit var buttonBackView: ImageButton
-    private var textWidth = 0f
-    private var screenWidth = 0f
+    private lateinit var buttonPlaybackControl: ImageButton
+
+    private var mediaPlayer = MediaPlayer()
+    private val handler = Handler(Looper.getMainLooper())
+    private lateinit var updateTimeRunnable: Runnable
+    private var currentPosition = 0L
+    private var isPlaying = false
+    private var prepared = false
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putLong(KEY_PLAYER_POSITION, currentPosition)
+        outState.putBoolean(KEY_IS_PLAYING, isPlaying)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        currentPosition = savedInstanceState.getLong(KEY_PLAYER_POSITION, 0)
+        isPlaying = savedInstanceState.getBoolean(KEY_IS_PLAYING, false)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (mediaPlayer.isPlaying) {
+            currentPosition = mediaPlayer.currentPosition.toLong()
+            mediaPlayer.pause()
+            handler.removeCallbacks(updateTimeRunnable)
+            isPlaying = false
+        }
+        updatePlayButtonState()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (prepared) {
+            mediaPlayer.seekTo(currentPosition.toInt())
+            trackPlaybackTimeView.text = formatTrackTime(currentPosition)
+        }
+        updatePlayButtonState()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer.release()
+        handler.removeCallbacks(updateTimeRunnable)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_audio_player)
-        initVievs()
-        shared = getSharedPreferences(MY_SAVES, MODE_PRIVATE)
+        initViews()
         setValues()
-        buttonBackView.setOnClickListener { finish() }
+        initTimeUpdater()
 
+        buttonBackView.setOnClickListener { finish() }
+        buttonPlaybackControl.setOnClickListener { playbackControl() }
+    }
+
+    private fun playbackControl() {
+        if (!mediaPlayer.isPlaying) {
+            mediaPlayer.seekTo(currentPosition.toInt())
+            mediaPlayer.start()
+            handler.post(updateTimeRunnable)
+            isPlaying = true
+        } else {
+            currentPosition = mediaPlayer.currentPosition.toLong()
+            mediaPlayer.pause()
+            handler.removeCallbacks(updateTimeRunnable)
+            isPlaying = false
+        }
+        updatePlayButtonState()
+    }
+
+    private fun updatePlayButtonState() {
+        buttonPlaybackControl.setImageResource(
+            if (mediaPlayer.isPlaying) R.drawable.track_pause
+            else R.drawable.track_play
+        )
+    }
+
+    private fun preparePlayer(url: String) {
+        mediaPlayer.setDataSource(url)
+        mediaPlayer.prepareAsync()
+        mediaPlayer.setOnPreparedListener {
+            prepared = true
+            buttonPlaybackControl.isEnabled = true
+            mediaPlayer.seekTo(currentPosition.toInt())
+            trackPlaybackTimeView.text = formatTrackTime(currentPosition)
+            updatePlayButtonState()
+        }
+        mediaPlayer.setOnCompletionListener {
+            currentPosition = 0
+            isPlaying = false
+            updatePlayButtonState()
+            trackPlaybackTimeView.text = formatTrackTime(0)
+        }
+    }
+
+    private fun initTimeUpdater() {
+        updateTimeRunnable = object : Runnable {
+            override fun run() {
+                if (mediaPlayer.isPlaying) {
+                    currentPosition = mediaPlayer.currentPosition.toLong()
+                    trackPlaybackTimeView.text = formatTrackTime(currentPosition)
+                }
+                handler.postDelayed(this, REQUESTING_PLAYBACK_TIME)
+            }
+        }
     }
 
     @SuppressLint("DefaultLocale")
@@ -60,13 +153,12 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     private fun setValues() {
         read()?.apply {
+            preparePlayer(previewUrl)
             trackNameView.text = trackName
             artistNameView.text = artistName
             trackTimeView.text = formatTrackTime(trackTimeMillis)
             albumView.text = collectionName
-            if (collectionName.isEmpty()){
-                albumView.visibility = View.GONE
-            }
+            if (collectionName.isEmpty()) albumView.visibility = View.GONE
             yearView.text = releaseDate.toString().take(4)
             genreView.text = primaryGenreName
             countryView.text = country
@@ -75,11 +167,11 @@ class AudioPlayerActivity : AppCompatActivity() {
             val imageUrl = artworkUrl100.replaceAfterLast('/', "512x512bb.jpg")
             val cornerRadiusPx = CORNER_RADIUS_DP_LOGO_500.dpToPx(trackViewLogo.context)
             Glide.with(trackViewLogo.context)
-                    .load(imageUrl)
-                    .error(R.drawable.placeholder)
-                    .transform(RoundedCornersTransformation(cornerRadiusPx, 0))
-                    .placeholder(R.drawable.placeholder)
-                    .into(trackViewLogo)
+                .load(imageUrl)
+                .error(R.drawable.placeholder)
+                .transform(RoundedCornersTransformation(cornerRadiusPx, 0))
+                .placeholder(R.drawable.placeholder)
+                .into(trackViewLogo)
         }
     }
 
@@ -91,8 +183,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         ).toInt()
     }
 
-
-    private fun initVievs() {
+    private fun initViews() {
         trackNameView = findViewById(R.id.AudioPlayer_trackName)
         artistNameView = findViewById(R.id.AudioPlayer_artistName)
         trackTimeView = findViewById(R.id.AudioPlayer_TextView_Track_Time_Result)
@@ -103,6 +194,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         countryView = findViewById(R.id.AudioPlayer_TextView_Country_Result)
         trackViewLogo = findViewById(R.id.AudioPlayer_track_view_logo)
         buttonBackView = findViewById(R.id.AudioPlayer_button_back)
+        buttonPlaybackControl = findViewById(R.id.AudioPlayer_play_track)
     }
 
     private fun read(): Track? {

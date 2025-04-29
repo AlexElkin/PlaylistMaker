@@ -16,16 +16,13 @@
         <ImageButton
             android:id="@+id/activity_search_button_back"
             style="@style/style_toolBar_button_back"
-            android:contentDescription="@string/button_back">
-        </ImageButton>
+            android:contentDescription="@string/button_back"/>
 
         <TextView
             android:id="@+id/activity_search_textView_search"
             android:text="@string/search"
             style="@style/style_toolBar_textView"
-            android:contentDescription="@string/search_label">
-
-        </TextView>
+            android:contentDescription="@string/search_label"/>
 
     </LinearLayout>
 
@@ -57,9 +54,7 @@
             android:textColor="@color/black"
             android:textColorHint="@color/activitySearch.grayBlack"
             android:textCursorDrawable="@drawable/cursor_drawable"
-            tools:ignore="TouchTargetSizeCheck">
-
-        </EditText>
+            tools:ignore="TouchTargetSizeCheck"/>
 
         <ImageView
             android:id="@+id/activity_search_clearIcon"
@@ -74,8 +69,9 @@
             android:backgroundTint="@color/activitySearch.backgroundGrayWhite"
             android:visibility="gone" />
 
-
     </FrameLayout>
+
+
 
     <TextView
         android:id="@+id/activity_search_TextView_You_were_looking"
@@ -87,8 +83,8 @@
         android:fontFamily="@font/ys_display_medium"
         android:textSize="18sp"
         android:gravity="center"
-        android:visibility="gone">
-    </TextView>
+        android:visibility="gone"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/activity_search_recyclerView"
         android:layout_marginTop="@dimen/_16dp"
@@ -96,6 +92,9 @@
         android:layout_height="wrap_content">
 
     </androidx.recyclerview.widget.RecyclerView>
+
+
+
     <Button
         android:id="@+id/activity_search_clear_history"
         android:layout_width="wrap_content"
@@ -106,9 +105,16 @@
         android:fontFamily="@font/ys_display_regular"
         android:textColor="@color/iconColorWhiteBlack"
         android:backgroundTint="@color/iconColorBlackWhite"
-        android:visibility="gone">
+        android:visibility="gone"/>
 
-    </Button>
+    <ProgressBar android:id="@+id/progressBar"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/blue"
+        android:layout_marginTop="140dp"
+        android:visibility="gone"/>
+
     <ImageView
         android:id="@+id/activity_search_imageView_Error"
         android:layout_width="match_parent"
@@ -116,8 +122,8 @@
         android:src = "@drawable/no_internet"
         android:layout_marginTop="100dp"
         android:layout_gravity="center"
-        android:visibility="gone">
-    </ImageView>
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/activity_search_textView_Error"
         android:layout_width="wrap_content"
@@ -127,17 +133,16 @@
         android:layout_marginTop="10dp"
         android:layout_gravity="center"
         android:gravity="center"
-        android:visibility="gone">
-    </TextView>
+        android:visibility="gone"/>
+
     <Button
         android:id="@+id/activity_search_button_update"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Обновить"
+        android:text="@string/update"
         android:layout_marginTop="24dp"
         android:backgroundTint="@color/iconColorBlackWhite"
-        android:visibility="gone">
+        android:visibility="gone"/>
 
-    </Button>
 </androidx.appcompat.widget.LinearLayoutCompat>
