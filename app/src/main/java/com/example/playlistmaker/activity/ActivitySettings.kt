@@ -11,10 +11,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.net.toUri
-import com.example.playlistmaker.App
-import com.example.playlistmaker.MY_SAVES
+import com.example.playlistmaker.ui.App
+import com.example.playlistmaker.data.MY_SAVES
 import com.example.playlistmaker.R
-import com.example.playlistmaker.THEME
+import com.example.playlistmaker.data.THEME
 
 class ActivitySettings : AppCompatActivity() {
 

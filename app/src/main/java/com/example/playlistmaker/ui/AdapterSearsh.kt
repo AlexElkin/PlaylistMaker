@@ -1,4 +1,4 @@
-package com.example.playlistmaker.adapters
+package com.example.playlistmaker.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -11,28 +11,27 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.playlistmaker.MILLISECONDS_IN_SECOND
 import com.example.playlistmaker.R
-import com.example.playlistmaker.SECONDS_IN_MINUTE
-import com.example.playlistmaker.TIME_FORMAT
-import com.example.playlistmaker.TRACK
 import com.example.playlistmaker.activity.AudioPlayerActivity
-import com.example.playlistmaker.data_classes.Track
-import com.google.gson.Gson
+import com.example.playlistmaker.data.MILLISECONDS_IN_SECOND
+import com.example.playlistmaker.data.SECONDS_IN_MINUTE
+import com.example.playlistmaker.data.TIME_FORMAT
+import com.example.playlistmaker.data.TRACK
+import com.example.playlistmaker.data.dto.TrackDto
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 
 class AdapterSearsh(
-    private var tracks: List<Track>,
+    private var tracks: List<TrackDto>,
     private val onItemClickListener: OnItemClickListener,
     private val context: Context
 ) : RecyclerView.Adapter<AdapterSearsh.ViewHolderSearsh>() {
 
     interface OnItemClickListener {
-        fun onItemClick(track: Track)
+        fun onItemClick(track: TrackDto)
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateTracks(newTracks: List<Track>) {
+    fun updateTracks(newTracks: List<TrackDto>) {
         tracks = newTracks
         notifyDataSetChanged()
     }
@@ -61,7 +60,7 @@ class AdapterSearsh(
             trackTime.ellipsize = TextUtils.TruncateAt.END
         }
 
-        fun bind(model: Track) {
+        fun bind(model: TrackDto) {
             trackName.text = model.trackName
             artistName.text = model.artistName
             trackTime.text = formatTrackTime(model.trackTimeMillis)

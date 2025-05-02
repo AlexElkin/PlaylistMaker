@@ -16,7 +16,4 @@ class Debouncer(private val delayMillis: Long) {
         handler.postDelayed(runnable!!, delayMillis)
     }
 
-    fun cancel() {
-        runnable?.let { handler.removeCallbacks(it) }
-    }
 }

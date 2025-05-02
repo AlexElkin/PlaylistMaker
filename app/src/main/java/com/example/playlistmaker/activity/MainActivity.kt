@@ -2,9 +2,12 @@ package com.example.playlistmaker.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
     private lateinit var buttonSearch: Button

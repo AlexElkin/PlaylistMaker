@@ -1,9 +1,11 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui
 
 import android.app.Application
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
+import com.example.playlistmaker.data.MY_SAVES
+import com.example.playlistmaker.data.THEME
 
 class App : Application() {
 
