@@ -24,6 +24,7 @@ import com.example.playlistmaker.data.ENTERED_TEXT
 import com.example.playlistmaker.data.IMAGE_ERROR_IMAGE_RESOURCE
 import com.example.playlistmaker.data.IMAGE_ERROR_VISIBILITY
 import com.example.playlistmaker.data.NoInternetException
+import com.example.playlistmaker.data.PLAYLIST_MAKER_PREFS
 import com.example.playlistmaker.data.RECYCLER_VISIBILITY
 import com.example.playlistmaker.data.SEARCH_DEBOUNCE_DELAY
 import com.example.playlistmaker.data.TEXT_ERROR_RESOURCE
@@ -53,7 +54,7 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
     private val debouncer = Debouncer(SEARCH_DEBOUNCE_DELAY)
     private val trackInteractor = Creator.provideTrackInteractor()
     private val sharedPreferences by lazy {
-        getSharedPreferences("playlist_maker_prefs", MODE_PRIVATE)
+        getSharedPreferences(PLAYLIST_MAKER_PREFS, MODE_PRIVATE)
     }
     private val searchHistory by lazy {
         SearchHistory(sharedPreferences)
@@ -164,8 +165,7 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
 
     private fun hideErrorStates() {
         recycler.visibility = View.GONE
-        imageError.visibility = View.GONE
-        textError.visibility = View.GONE
+        visibilityError()
         buttonUpdate.visibility = View.GONE
         textYouWereLooking.visibility = View.GONE
     }
@@ -175,8 +175,7 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
         imageError.setImageResource(imageResource)
         textResource = R.string.no_track
         textError.setText(textResource)
-        imageError.visibility = View.VISIBLE
-        textError.visibility = View.VISIBLE
+        visibilityError()
     }
 
     private fun showNoInternetError() {
@@ -184,9 +183,13 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
         imageError.setImageResource(imageResource)
         textResource = R.string.no_internet
         textError.setText(textResource)
+        visibilityError()
+        buttonUpdate.visibility = View.VISIBLE
+    }
+
+    private fun visibilityError(){
         imageError.visibility = View.VISIBLE
         textError.visibility = View.VISIBLE
-        buttonUpdate.visibility = View.VISIBLE
     }
 
     private fun showUnknownError() {

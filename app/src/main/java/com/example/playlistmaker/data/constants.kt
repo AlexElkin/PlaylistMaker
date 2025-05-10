@@ -20,3 +20,4 @@ const val KEY_PLAYER_POSITION = "player_position"
 const val KEY_IS_PLAYING = "is_playing"
 const val KEY_SEARCH_HISTORY = "search_history"
 const val MAX_HISTORY_ITEMS = 10
+const val PLAYLIST_MAKER_PREFS = "playlist_maker_prefs"
