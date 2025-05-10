@@ -1,9 +1,7 @@
-package com.example.playlistmaker.data.local
+package com.example.playlistmaker.data
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import com.example.playlistmaker.data.KEY_SEARCH_HISTORY
-import com.example.playlistmaker.data.MAX_HISTORY_ITEMS
 import com.example.playlistmaker.data.dto.TrackDto
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -22,7 +20,6 @@ class SearchHistory(
     fun addTrack(track: TrackDto) {
         val currentHistory = getHistory()?.toMutableList() ?: mutableListOf()
 
-        // Более надёжное сравнение по нескольким полям
         currentHistory.removeAll {
             it.trackName == track.trackName &&
                     it.artistName == track.artistName &&

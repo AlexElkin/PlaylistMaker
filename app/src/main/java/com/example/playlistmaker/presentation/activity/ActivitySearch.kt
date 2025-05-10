@@ -1,4 +1,4 @@
-package com.example.playlistmaker.activity
+package com.example.playlistmaker.presentation.activity
 
 import android.os.Bundle
 import android.text.Editable
@@ -17,21 +17,21 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.Creator
+import com.example.playlistmaker.presentation.utils.Debouncer
+import com.example.playlistmaker.R
 import com.example.playlistmaker.data.BUTTON_UPDATE_VISIBILITY
-import com.example.playlistmaker.Debouncer
 import com.example.playlistmaker.data.ENTERED_TEXT
 import com.example.playlistmaker.data.IMAGE_ERROR_IMAGE_RESOURCE
 import com.example.playlistmaker.data.IMAGE_ERROR_VISIBILITY
-import com.example.playlistmaker.ui.AdapterSearsh
-import com.example.playlistmaker.R
+import com.example.playlistmaker.data.NoInternetException
 import com.example.playlistmaker.data.RECYCLER_VISIBILITY
 import com.example.playlistmaker.data.SEARCH_DEBOUNCE_DELAY
-import com.example.playlistmaker.data.NoInternetException
 import com.example.playlistmaker.data.TEXT_ERROR_RESOURCE
 import com.example.playlistmaker.data.TEXT_ERROR_VISIBILITY
 import com.example.playlistmaker.data.dto.Track
 import com.example.playlistmaker.data.dto.TrackDto
-import com.example.playlistmaker.data.local.SearchHistory
+import com.example.playlistmaker.data.SearchHistory
+import com.example.playlistmaker.presentation.adapter.AdapterSearsh
 import kotlinx.coroutines.launch
 
 class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {

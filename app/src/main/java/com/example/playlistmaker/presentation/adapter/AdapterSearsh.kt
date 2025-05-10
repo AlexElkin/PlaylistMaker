@@ -1,4 +1,4 @@
-package com.example.playlistmaker.ui
+package com.example.playlistmaker.presentation.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -12,12 +12,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
-import com.example.playlistmaker.activity.AudioPlayerActivity
 import com.example.playlistmaker.data.MILLISECONDS_IN_SECOND
 import com.example.playlistmaker.data.SECONDS_IN_MINUTE
 import com.example.playlistmaker.data.TIME_FORMAT
 import com.example.playlistmaker.data.TRACK
 import com.example.playlistmaker.data.dto.TrackDto
+import com.example.playlistmaker.presentation.activity.AudioPlayerActivity
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 
 class AdapterSearsh(

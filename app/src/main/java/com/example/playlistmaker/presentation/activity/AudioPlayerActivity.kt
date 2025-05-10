@@ -1,11 +1,10 @@
-package com.example.playlistmaker.activity
+package com.example.playlistmaker.presentation.activity
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.example.playlistmaker.R
 import android.media.MediaPlayer
+import android.os.Build
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.TypedValue
@@ -13,7 +12,9 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.example.playlistmaker.R
 import com.example.playlistmaker.data.CORNER_RADIUS_DP_LOGO_500
 import com.example.playlistmaker.data.KEY_IS_PLAYING
 import com.example.playlistmaker.data.KEY_PLAYER_POSITION
@@ -196,7 +197,7 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     private fun read(): TrackDto? {
-        return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra(TRACK, TrackDto::class.java)
         } else {
             @Suppress("DEPRECATION")
