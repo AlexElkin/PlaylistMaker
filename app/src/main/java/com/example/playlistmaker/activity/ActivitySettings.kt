@@ -88,7 +88,7 @@ class ActivitySettings : AppCompatActivity() {
         buttonBack.setOnClickListener {
             finish()
         }
-        switch.setOnCheckedChangeListener { switcher, checked ->
+        switch.setOnCheckedChangeListener { _,checked ->
             (applicationContext as App).switchTheme(checked)
         }
 

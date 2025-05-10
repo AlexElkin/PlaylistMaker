@@ -19,7 +19,6 @@ import com.example.playlistmaker.data.KEY_IS_PLAYING
 import com.example.playlistmaker.data.KEY_PLAYER_POSITION
 import com.example.playlistmaker.data.REQUESTING_PLAYBACK_TIME
 import com.example.playlistmaker.data.TRACK
-import com.example.playlistmaker.data.dto.Track
 import com.example.playlistmaker.data.dto.TrackDto
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 
@@ -133,14 +132,12 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     private fun initTimeUpdater() {
-        updateTimeRunnable = object : Runnable {
-            override fun run() {
-                if (mediaPlayer.isPlaying) {
-                    currentPosition = mediaPlayer.currentPosition.toLong()
-                    trackPlaybackTimeView.text = formatTrackTime(currentPosition)
-                }
-                handler.postDelayed(this, REQUESTING_PLAYBACK_TIME)
+        updateTimeRunnable = Runnable {
+            if (mediaPlayer.isPlaying) {
+                currentPosition = mediaPlayer.currentPosition.toLong()
+                trackPlaybackTimeView.text = formatTrackTime(currentPosition)
             }
+            handler.postDelayed(updateTimeRunnable, REQUESTING_PLAYBACK_TIME)
         }
     }
 

@@ -26,7 +26,7 @@ class AdapterSearsh(
     private val context: Context
 ) : RecyclerView.Adapter<AdapterSearsh.ViewHolderSearsh>() {
 
-    interface OnItemClickListener {
+    fun interface OnItemClickListener {
         fun onItemClick(track: TrackDto)
     }
 

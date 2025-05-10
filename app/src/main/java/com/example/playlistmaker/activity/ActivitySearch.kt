@@ -101,7 +101,7 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
                 false
             }
         }
-        editText.setOnFocusChangeListener { view, hasFocus ->
+        editText.setOnFocusChangeListener { _,hasFocus ->
             if (hasFocus && countValue.isEmpty()) {
                 createHistory()
             }
@@ -283,16 +283,6 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
                 track.previewUrl
             )
         }
-    }
-
-    private fun internetErrorHandling() {
-        imageResource = R.drawable.no_internet
-        imageError.setImageResource(imageResource)
-        textResource = R.string.no_internet
-        textError.setText(textResource)
-        imageError.visibility = View.VISIBLE
-        textError.visibility = View.VISIBLE
-        buttonUpdate.visibility = View.VISIBLE
     }
 
     override fun onItemClick(track: TrackDto) {
