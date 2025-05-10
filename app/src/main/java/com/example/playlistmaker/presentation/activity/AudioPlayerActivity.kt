@@ -1,11 +1,10 @@
-package com.example.playlistmaker.activity
+package com.example.playlistmaker.presentation.activity
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.example.playlistmaker.R
 import android.media.MediaPlayer
+import android.os.Build
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.TypedValue
@@ -13,13 +12,15 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.example.playlistmaker.CORNER_RADIUS_DP_LOGO_500
-import com.example.playlistmaker.KEY_IS_PLAYING
-import com.example.playlistmaker.KEY_PLAYER_POSITION
-import com.example.playlistmaker.REQUESTING_PLAYBACK_TIME
-import com.example.playlistmaker.TRACK
-import com.example.playlistmaker.data_classes.Track
+import com.example.playlistmaker.R
+import com.example.playlistmaker.data.CORNER_RADIUS_DP_LOGO_500
+import com.example.playlistmaker.data.KEY_IS_PLAYING
+import com.example.playlistmaker.data.KEY_PLAYER_POSITION
+import com.example.playlistmaker.data.REQUESTING_PLAYBACK_TIME
+import com.example.playlistmaker.data.TRACK
+import com.example.playlistmaker.data.dto.TrackDto
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 
 class AudioPlayerActivity : AppCompatActivity() {
@@ -132,14 +133,12 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     private fun initTimeUpdater() {
-        updateTimeRunnable = object : Runnable {
-            override fun run() {
-                if (mediaPlayer.isPlaying) {
-                    currentPosition = mediaPlayer.currentPosition.toLong()
-                    trackPlaybackTimeView.text = formatTrackTime(currentPosition)
-                }
-                handler.postDelayed(this, REQUESTING_PLAYBACK_TIME)
+        updateTimeRunnable = Runnable {
+            if (mediaPlayer.isPlaying) {
+                currentPosition = mediaPlayer.currentPosition.toLong()
+                trackPlaybackTimeView.text = formatTrackTime(currentPosition)
             }
+            handler.postDelayed(updateTimeRunnable, REQUESTING_PLAYBACK_TIME)
         }
     }
 
@@ -197,12 +196,12 @@ class AudioPlayerActivity : AppCompatActivity() {
         buttonPlaybackControl = findViewById(R.id.AudioPlayer_play_track)
     }
 
-    private fun read(): Track? {
-        return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(TRACK, Track::class.java)
+    private fun read(): TrackDto? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(TRACK, TrackDto::class.java)
         } else {
             @Suppress("DEPRECATION")
-            intent.getParcelableExtra(TRACK) as? Track
+            intent.getParcelableExtra(TRACK) as? TrackDto
         }
     }
 }

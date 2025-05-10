@@ -1,6 +1,6 @@
-package com.example.playlistmaker.api
+package com.example.playlistmaker.data.network
 
-import com.example.playlistmaker.data_classes.TrackResponse
+import com.example.playlistmaker.data.dto.TrackResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
