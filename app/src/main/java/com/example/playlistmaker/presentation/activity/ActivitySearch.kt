@@ -1,6 +1,5 @@
-package com.example.playlistmaker.activity
+package com.example.playlistmaker.presentation.activity
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -17,27 +16,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.BUTTON_UPDATE_VISIBILITY
-import com.example.playlistmaker.Debouncer
-import com.example.playlistmaker.ENTERED_TEXT
-import com.example.playlistmaker.IMAGE_ERROR_IMAGE_RESOURCE
-import com.example.playlistmaker.IMAGE_ERROR_VISIBILITY
-import com.example.playlistmaker.MY_SAVES
-import com.example.playlistmaker.adapters.AdapterSearsh
-import com.example.playlistmaker.api.ApiService
+import com.example.playlistmaker.Creator
+import com.example.playlistmaker.presentation.utils.Debouncer
 import com.example.playlistmaker.R
-import com.example.playlistmaker.RECYCLER_VISIBILITY
-import com.example.playlistmaker.SEARCH_DEBOUNCE_DELAY
-import com.example.playlistmaker.SearchHistory
-import com.example.playlistmaker.TEXT_ERROR_RESOURCE
-import com.example.playlistmaker.TEXT_ERROR_VISIBILITY
-import com.example.playlistmaker.data_classes.Track
-import com.example.playlistmaker.data_classes.TrackResponse
+import com.example.playlistmaker.data.BUTTON_UPDATE_VISIBILITY
+import com.example.playlistmaker.data.ENTERED_TEXT
+import com.example.playlistmaker.data.IMAGE_ERROR_IMAGE_RESOURCE
+import com.example.playlistmaker.data.IMAGE_ERROR_VISIBILITY
+import com.example.playlistmaker.data.NoInternetException
+import com.example.playlistmaker.data.PLAYLIST_MAKER_PREFS
+import com.example.playlistmaker.data.RECYCLER_VISIBILITY
+import com.example.playlistmaker.data.SEARCH_DEBOUNCE_DELAY
+import com.example.playlistmaker.data.TEXT_ERROR_RESOURCE
+import com.example.playlistmaker.data.TEXT_ERROR_VISIBILITY
+import com.example.playlistmaker.data.dto.Track
+import com.example.playlistmaker.data.dto.TrackDto
+import com.example.playlistmaker.data.SearchHistory
+import com.example.playlistmaker.presentation.adapter.AdapterSearsh
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.io.IOException
 
 class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
 
@@ -49,15 +45,20 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
     private lateinit var adapter: AdapterSearsh
     private lateinit var imageError: ImageView
     private lateinit var buttonUpdate: Button
-    private lateinit var clearHistory : Button
+    private lateinit var clearHistory: Button
     private lateinit var textError: TextView
     private lateinit var textYouWereLooking: TextView
     private lateinit var progressBar: ProgressBar
     private var imageResource: Int = R.drawable.no_tracks
     private var textResource: Int = R.string.no_track
-    private lateinit var sharedPreferences: SharedPreferences
     private val debouncer = Debouncer(SEARCH_DEBOUNCE_DELAY)
-
+    private val trackInteractor = Creator.provideTrackInteractor()
+    private val sharedPreferences by lazy {
+        getSharedPreferences(PLAYLIST_MAKER_PREFS, MODE_PRIVATE)
+    }
+    private val searchHistory by lazy {
+        SearchHistory(sharedPreferences)
+    }
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(ENTERED_TEXT, countValue)
@@ -89,7 +90,6 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-        sharedPreferences = getSharedPreferences(MY_SAVES, MODE_PRIVATE)
         initViews()
         setOnClick()
         editText.addTextChangedListener(createTextWatcher())
@@ -102,29 +102,30 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
                 false
             }
         }
-        editText.setOnFocusChangeListener { view, hasFocus ->
+        editText.setOnFocusChangeListener { _,hasFocus ->
             if (hasFocus && countValue.isEmpty()) {
                 createHistory()
             }
         }
 
-        adapter = AdapterSearsh(emptyList(),this,this)
+        adapter = AdapterSearsh(emptyList(), this, this)
         startEditText()
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
     }
 
-    private fun startEditText(){
+    private fun startEditText() {
         editText.requestFocus()
         createHistory()
     }
-    private fun createHistory(){
-        val tracks = SearchHistory(sharedPreferences).read()
+
+    private fun createHistory() {
+        val tracks = searchHistory.getHistory()
         if (tracks != null && tracks.isNotEmpty()) {
             textYouWereLooking.visibility = View.VISIBLE
             clearHistory.visibility = View.VISIBLE
             recycler.visibility = View.VISIBLE
-            adapter.updateTracks(tracks.reversed<Track>())
+            adapter.updateTracks(tracks.reversed())
         }
     }
 
@@ -140,12 +141,71 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
         clearHistory = findViewById(R.id.activity_search_clear_history)
         progressBar = findViewById(R.id.progressBar)
     }
+    private fun performSearch() {
+        progressBar.visibility = View.VISIBLE
+        hideErrorStates()
+
+        lifecycleScope.launch {
+            try {
+                val tracks = trackInteractor.searchTrack(countValue)
+                if (tracks.isEmpty()) {
+                    showEmptyState()
+                } else {
+                    showTracks(bringDto(tracks))
+                }
+            } catch (e: NoInternetException) {
+                showNoInternetError()
+            } catch (e: Exception) {
+                showUnknownError()
+            } finally {
+                progressBar.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun hideErrorStates() {
+        recycler.visibility = View.GONE
+        visibilityError()
+        buttonUpdate.visibility = View.GONE
+        textYouWereLooking.visibility = View.GONE
+    }
+
+    private fun showEmptyState() {
+        imageResource = R.drawable.no_tracks
+        imageError.setImageResource(imageResource)
+        textResource = R.string.no_track
+        textError.setText(textResource)
+        visibilityError()
+    }
+
+    private fun showNoInternetError() {
+        imageResource = R.drawable.no_internet
+        imageError.setImageResource(imageResource)
+        textResource = R.string.no_internet
+        textError.setText(textResource)
+        visibilityError()
+        buttonUpdate.visibility = View.VISIBLE
+    }
+
+    private fun visibilityError(){
+        imageError.visibility = View.VISIBLE
+        textError.visibility = View.VISIBLE
+    }
+
+    private fun showUnknownError() {
+        TODO()
+    }
+
+    private fun showTracks(tracks: List<TrackDto>) {
+        recycler.visibility = View.VISIBLE
+        adapter.updateTracks(tracks)
+    }
 
     private fun setOnClick() {
         buttonBack.setOnClickListener { finish() }
         clearHistory.setOnClickListener {
             textYouWereLooking.visibility = View.GONE
-            SearchHistory(sharedPreferences).removeHistory()
+            searchHistory.clearHistory()
             recycler.visibility = View.GONE
             clearHistory.visibility = View.GONE
         }
@@ -154,17 +214,13 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
             clearingScreen()
             createHistory()
             hideKeyboard(editText)
-
         }
-
         buttonUpdate.setOnClickListener {
             performSearch()
         }
     }
 
-
     private fun clearingScreen() {
-
         clearButton.visibility = View.GONE
         recycler.visibility = View.GONE
         imageError.visibility = View.GONE
@@ -189,11 +245,9 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
                         textYouWereLooking.visibility = View.GONE
                         recycler.visibility = View.GONE
                         clearHistory.visibility = View.GONE
-                        debouncer.debounce {performSearch()}
+                        debouncer.debounce { performSearch() }
                     }
-
                 }
-
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -216,66 +270,25 @@ class ActivitySearch : AppCompatActivity(), AdapterSearsh.OnItemClickListener {
         }
     }
 
-    private fun performSearch() {
-        progressBar.visibility = View.VISIBLE
-        recycler.visibility = View.GONE
-        imageError.visibility = View.GONE
-        textError.visibility = View.GONE
-        buttonUpdate.visibility = View.GONE
-        textYouWereLooking.visibility = View.GONE
-        adapter.updateTracks(emptyList())
-        lifecycleScope.launch {
-            try {
-                val tracks = apiConnection()
-                if (tracks.results.isEmpty()) {
-                    imageResource = R.drawable.no_tracks
-                    imageError.setImageResource(imageResource)
-                    textResource = R.string.no_track
-                    textError.setText(textResource)
-                    imageError.visibility = View.VISIBLE
-                    textError.visibility = View.VISIBLE
-                } else {
-                    recycler.visibility = View.VISIBLE
-                    adapter.updateTracks(tracks.results)
 
-                }
 
-            } catch (e: IOException) {
-                // Обработка ошибок, связанных с сетью
-                internetErrorHandling()
-            } catch (e: HttpException) {
-                // Обработка HTTP-ошибок (4xx, 5xx)
-                internetErrorHandling()
-            } catch (e: Exception) {
-                // Обработка всех остальных ошибок
-                println("Unexpected error: ${e.message}")
-            }
-            progressBar.visibility = View.GONE
+    private fun bringDto(tracks: List<Track>): List<TrackDto> {
+        return tracks.map { track ->
+            TrackDto(
+                track.trackName,
+                track.artistName,
+                track.collectionName,
+                track.trackTimeMillis,
+                track.releaseDate,
+                track.primaryGenreName,
+                track.country,
+                track.artworkUrl100,
+                track.previewUrl
+            )
         }
     }
 
-    private fun internetErrorHandling() {
-        imageResource = R.drawable.no_internet
-        imageError.setImageResource(imageResource)
-        textResource = R.string.no_internet
-        textError.setText(textResource)
-        imageError.visibility = View.VISIBLE
-        textError.visibility = View.VISIBLE
-        buttonUpdate.visibility = View.VISIBLE
-    }
-
-    private suspend fun apiConnection(): TrackResponse {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://itunes.apple.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val apiService = retrofit.create(ApiService::class.java)
-        return apiService.getTrack(countValue)
-    }
-
-    override fun onItemClick(track: Track) {
-        SearchHistory(sharedPreferences).addTrack(track)
+    override fun onItemClick(track: TrackDto) {
+        searchHistory.addTrack(track)
     }
 }
-
-

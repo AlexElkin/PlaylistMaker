@@ -1,8 +1,7 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.data
 
 const val MY_SAVES = "my saves"
 const val THEME = "theme"
-const val LIST_TRACKS = "list tracks"
 const val TRACK = "track"
 const val ENTERED_TEXT = "ENTERED_TEXT"
 const val RECYCLER_VISIBILITY = "RECYCLER_VISIBILITY"
@@ -19,3 +18,6 @@ const val SEARCH_DEBOUNCE_DELAY = 2000L
 const val REQUESTING_PLAYBACK_TIME = 300L
 const val KEY_PLAYER_POSITION = "player_position"
 const val KEY_IS_PLAYING = "is_playing"
+const val KEY_SEARCH_HISTORY = "search_history"
+const val MAX_HISTORY_ITEMS = 10
+const val PLAYLIST_MAKER_PREFS = "playlist_maker_prefs"
