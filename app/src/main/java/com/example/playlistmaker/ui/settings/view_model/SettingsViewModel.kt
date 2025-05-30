@@ -1,15 +1,19 @@
 package com.example.playlistmaker.ui.settings.viewmodel
 
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.domain.settings.SettingRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class SettingsViewModel(private val settingRepository: SettingRepository) : ViewModel() {
 
-    private val _themeState = MutableLiveData<Boolean>()
-        .apply {value = settingRepository.getTheme()}
-    val themeState: LiveData<Boolean> = _themeState
+
+    private val _themeState = MutableStateFlow(settingRepository.getTheme())
+    val themeState: StateFlow<Boolean> = _themeState.asStateFlow()
 
     private val _navigationEvent = MutableLiveData<NavigationEvent>()
     val navigationEvent: LiveData<NavigationEvent> = _navigationEvent
@@ -23,9 +27,9 @@ class SettingsViewModel(private val settingRepository: SettingRepository) : View
     fun onUserAgreementClicked() = _navigationEvent.postValue(NavigationEvent.UserAgreement)
 
     fun onThemeSwitchChanged(isChecked: Boolean) {//если изменился переключатель
-        if (_themeState.value != isChecked) {//если старые данные не равны положению переключателя
+        if (themeState.value != isChecked) {//если старые данные не равны положению переключателя
             settingRepository.setTheme(isChecked)//сохранить тему
-            _themeState.postValue(isChecked)//изменить данные на которые подписан
+            _themeState.value = isChecked//изменить данные на которые подписан
 
         }
     }

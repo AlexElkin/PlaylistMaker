@@ -8,21 +8,24 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.net.toUri
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.playlistmaker.R
 import com.example.playlistmaker.data.settings.SettingRepositoryImpl
 import com.example.playlistmaker.data.SharedPreferencesImpl
 import com.example.playlistmaker.databinding.ActivitySettingsBinding
 import com.example.playlistmaker.ui.main.activity.MainActivity
-import com.example.playlistmaker.ui.search.activity.SearchActivity
 import com.example.playlistmaker.ui.settings.view_model.SettingsViewModelFactory
 import com.example.playlistmaker.ui.settings.viewmodel.SettingsViewModel
+import kotlinx.coroutines.launch
 
 
 class ActivitySettings : AppCompatActivity() {
 
+    private var isSwitchProgrammaticUpdate = false
     private lateinit var binding: ActivitySettingsBinding
-    private  val check by lazy { viewModel.themeState.value ?: checkTheme() }
     private val viewModel: SettingsViewModel by lazy {
         val preferencesStorage = SharedPreferencesImpl(this)
         val settingsRepository = SettingRepositoryImpl(preferencesStorage)
@@ -35,10 +38,16 @@ class ActivitySettings : AppCompatActivity() {
 
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.activitySettingsSwitchTheme.isChecked = check
-        Log.d("изменение дефолтные свитча","$check")
         setupClickListeners()
         observeViewModel()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        // Вручную обрабатываем изменение темы
+        val currentNightMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val isDarkTheme = currentNightMode == Configuration.UI_MODE_NIGHT_YES
+        binding.activitySettingsSwitchTheme.isChecked = isDarkTheme
     }
 
     private fun setupClickListeners() {
@@ -47,21 +56,23 @@ class ActivitySettings : AppCompatActivity() {
             activitySettingsTextViewShareTheApp.setOnClickListener { viewModel.onShareAppClicked() }
             activitySettingsTextViewWriteToSupport.setOnClickListener { viewModel.onSupportClicked() }
             activitySettingsTextViewUserAgreement.setOnClickListener { viewModel.onUserAgreementClicked() }
-
             activitySettingsSwitchTheme.setOnCheckedChangeListener { _, checked ->
-                if (checked != check){
-                Log.d("изменение свитча","$checked")
-                viewModel.onThemeSwitchChanged(checked)
-                //updateThemeUi(checked)
+                if (!isSwitchProgrammaticUpdate) {
+                    Log.d("изменение свитча", "$checked")
+                    viewModel.onThemeSwitchChanged(checked)
                 }
             }
         }
     }
 
     private fun observeViewModel() {
-        viewModel.themeState.observe(this) { isDarkTheme ->//если изменились данные
-            Log.d("изменение темы","$isDarkTheme")
-            updateThemeUi(isDarkTheme)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.themeState.collect { isDarkTheme ->
+                    binding.activitySettingsSwitchTheme.isChecked = isDarkTheme
+                    updateThemeUi(isDarkTheme)
+                }
+            }
         }
 
         viewModel.navigationEvent.observe(this) { event ->
@@ -90,6 +101,17 @@ class ActivitySettings : AppCompatActivity() {
         startActivity(intent)
     }
 
+    private fun updateThemeUi(isDark: Boolean) {
+        binding.root.animate().alpha(0.7f).setDuration(150).withEndAction {
+            AppCompatDelegate.setDefaultNightMode(
+                if (isDark) AppCompatDelegate.MODE_NIGHT_YES
+                else AppCompatDelegate.MODE_NIGHT_NO
+            )
+            delegate.applyDayNight()
+            binding.root.animate().alpha(1f).setDuration(150)
+        }
+    }
+
     private fun openSupportEmail() {
         try {
             startActivity(Intent(Intent.ACTION_SENDTO).apply {
@@ -107,26 +129,7 @@ class ActivitySettings : AppCompatActivity() {
         startActivity(Intent(Intent.ACTION_VIEW, getString(R.string.link_practicum_offer).toUri()))
     }
 
-    private fun updateThemeUi(isDark: Boolean) {
-        AppCompatDelegate.setDefaultNightMode(
-            if (isDark) {
-                AppCompatDelegate.MODE_NIGHT_YES
-            } else {
-                AppCompatDelegate.MODE_NIGHT_NO
-            }
-        )
-    }
 
-    fun checkTheme(): Boolean {
-        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        return when (currentNightMode) {
-            Configuration.UI_MODE_NIGHT_NO -> false
-
-            Configuration.UI_MODE_NIGHT_YES -> true
-
-            else -> false
-        }
-    }
 }
 
 
