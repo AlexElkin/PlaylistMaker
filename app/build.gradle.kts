@@ -41,6 +41,7 @@ android {
 
 dependencies {
     implementation(libs.glide.transformations)
+    implementation(libs.koin.android)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation (libs.androidx.lifecycle.viewmodel.ktx)
