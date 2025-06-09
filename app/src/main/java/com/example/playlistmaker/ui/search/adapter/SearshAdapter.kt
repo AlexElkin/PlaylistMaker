@@ -1,6 +1,7 @@
 package com.example.playlistmaker.ui.search.adapter
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -40,11 +41,6 @@ class SearchAdapter(
             artistName.text = track.artistName
             trackTime.text = track.trackTimeMillis.toString()
 
-            // Настройка максимального количества строк
-            trackName.maxLines = 1
-            artistName.maxLines = 1
-            trackTime.maxLines = 1
-
             // Настройка ellipsize
             trackName.ellipsize = TextUtils.TruncateAt.END
             artistName.ellipsize = TextUtils.TruncateAt.END
@@ -55,8 +51,13 @@ class SearchAdapter(
                 .load(track.artworkUrl100)
                 .placeholder(R.drawable.baseline_sync_problem_24)
                 .error(R.drawable.baseline_sync_problem_24)
-                .transform(RoundedCornersTransformation(2, 0))
+                .transform(RoundedCornersTransformation(
+                    dpToPx(itemView.context, 2),0))
                 .into(imageButton)
+        }
+
+        fun dpToPx(context: Context, dp: Int): Int {
+            return (dp * context.resources.displayMetrics.density).toInt()
         }
     }
 
@@ -64,6 +65,8 @@ class SearchAdapter(
         val view = LayoutInflater.from(parent.context).inflate(R.layout.track_view, parent, false)
         return ViewHolder(view)
     }
+
+
 
     override fun getItemCount() = tracks.size
 

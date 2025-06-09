@@ -26,6 +26,7 @@
             android:id="@+id/trackName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLines="1"
             android:text="@string/track_name"
             style="@style/style_activity_search_textView_16sp">
 
@@ -39,6 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/executor"
+                android:maxLines="1"
                 style="@style/style_activity_search_textView_12sp">
             </TextView>
             <ImageView
@@ -53,6 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/time"
+                android:maxLines="1"
                 style="@style/style_activity_search_textView_12sp">
             </TextView>
         </LinearLayout>
