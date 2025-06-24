@@ -9,29 +9,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.playlistmaker.R
-import com.example.playlistmaker.data.settings.SettingRepositoryImpl
-import com.example.playlistmaker.data.SharedPreferencesImpl
 import com.example.playlistmaker.databinding.ActivitySettingsBinding
 import com.example.playlistmaker.ui.main.activity.MainActivity
-import com.example.playlistmaker.ui.settings.view_model.SettingsViewModelFactory
 import com.example.playlistmaker.ui.settings.viewmodel.SettingsViewModel
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class ActivitySettings : AppCompatActivity() {
 
     private var isSwitchProgrammaticUpdate = false
     private lateinit var binding: ActivitySettingsBinding
-    private val viewModel: SettingsViewModel by lazy {
-        val preferencesStorage = SharedPreferencesImpl(this)
-        val settingsRepository = SettingRepositoryImpl(preferencesStorage)
-        val viewModelFactory = SettingsViewModelFactory(settingsRepository)
-        ViewModelProvider(this, viewModelFactory).get(SettingsViewModel::class.java)
-    }
+    private val viewModel: SettingsViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

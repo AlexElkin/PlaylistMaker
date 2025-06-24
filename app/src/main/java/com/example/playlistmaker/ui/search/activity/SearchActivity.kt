@@ -19,14 +19,12 @@ import com.example.playlistmaker.ui.player.activity.AudioPlayerActivity
 import com.example.playlistmaker.ui.search.adapter.SearchAdapter
 import com.example.playlistmaker.ui.search.view_model.SearchState
 import com.example.playlistmaker.ui.search.view_model.SearchViewModel
-import com.example.playlistmaker.ui.search.view_model.ViewModelFactory
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySearchBinding
-    private val viewModel: SearchViewModel by viewModels {
-        ViewModelFactory(applicationContext)
-    }
+    private val viewModel: SearchViewModel by viewModel()
     private val adapter = SearchAdapter(
         emptyList(), onItemClickListener = { track -> viewModel.onTrackClicked(track)}
     )

@@ -1,6 +1,5 @@
 package com.example.playlistmaker.ui.main.activity
 
-import androidx.activity.viewModels
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -9,10 +8,11 @@ import com.example.playlistmaker.ui.library.activity.ActivityLibrary
 import com.example.playlistmaker.ui.main.view_model.MainViewModel
 import com.example.playlistmaker.ui.search.activity.SearchActivity
 import com.example.playlistmaker.ui.settings.activity.ActivitySettings
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
