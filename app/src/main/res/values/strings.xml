@@ -33,4 +33,9 @@
     <string name="Year">Год</string>
     <string name="Genre">Жанр</string>
     <string name="update">Обновить</string>
+    <string name="library_empty">Ваша медиатека пуста</string>
+    <string name="image_no_tracks">image no tracks</string>
+    <string name="new_playlists">Новый плейлист</string>
+    <string name="library">Медиатека</string>
+    <string name="you_havent_created_any_playlists">Вы не создали\n ни одного плейлиста</string>
 </resources>

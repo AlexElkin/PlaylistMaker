@@ -7,6 +7,9 @@ import com.example.playlistmaker.data.settings.SettingRepositoryImpl
 import com.example.playlistmaker.debouncer
 import com.example.playlistmaker.dispatcherProvider
 import com.example.playlistmaker.domain.settings.SettingRepository
+import com.example.playlistmaker.fragmentPlaylistsViewModel
+import com.example.playlistmaker.fragmentTracksViewModel
+import com.example.playlistmaker.libraryViewModel
 import com.example.playlistmaker.mainViewModel
 import com.example.playlistmaker.networkModule
 import com.example.playlistmaker.playerModule
@@ -41,7 +44,11 @@ class App : Application() {
                         mainViewModel,
                         networkModule,
                         dispatcherProvider,
-                        debouncer)}
+                        debouncer,
+                        libraryViewModel,
+                        fragmentPlaylistsViewModel,
+                        fragmentTracksViewModel
+                    )}
         val settingsRepository: SettingRepository by inject()
         val isDarkTheme = settingsRepository.getTheme()
         AppCompatDelegate.setDefaultNightMode(

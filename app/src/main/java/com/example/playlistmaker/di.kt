@@ -21,9 +21,12 @@ import com.example.playlistmaker.domain.search.api.SearchInteractor
 import com.example.playlistmaker.domain.search.impl.SearchHistoryRepositoryImpl
 import com.example.playlistmaker.domain.search.impl.SearchInteractorImpl
 import com.example.playlistmaker.domain.settings.SettingRepository
+import com.example.playlistmaker.ui.library.view_model.FragmentPlaylistsViewModel
+import com.example.playlistmaker.ui.library.view_model.FragmentTracksViewModel
 import com.example.playlistmaker.ui.main.view_model.MainViewModel
 import com.example.playlistmaker.ui.player.view_model.PlayerViewModel
 import com.example.playlistmaker.ui.search.view_model.SearchViewModel
+import com.example.playlistmaker.ui.settings.viewmodel.LibraryViewModel
 import com.example.playlistmaker.ui.settings.viewmodel.SettingsViewModel
 import com.example.playlistmaker.ui.utils.Debouncer
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -82,6 +85,19 @@ val searchViewModel = module {
 val mainViewModel = module {
     viewModel { MainViewModel() }
 }
+
+val libraryViewModel = module {
+    viewModel { LibraryViewModel() }
+}
+
+val fragmentPlaylistsViewModel = module {
+    viewModel { FragmentPlaylistsViewModel() }
+}
+
+val fragmentTracksViewModel = module {
+    viewModel { FragmentTracksViewModel() }
+}
+
 
 val networkModule = module {
     factory<NetworkClient> {
