@@ -24,7 +24,8 @@
             android:exported="false" />
         <activity
             android:name=".ui.library.activity.ActivityLibrary"
-            android:exported="false"/>
+            android:exported="false"
+            android:theme="@style/Base.Theme.PlaylistMaker.ActivityLibrary"/>
         <activity
             android:name=".ui.settings.activity.ActivitySettings"
             android:configChanges="uiMode|screenSize|smallestScreenSize"
