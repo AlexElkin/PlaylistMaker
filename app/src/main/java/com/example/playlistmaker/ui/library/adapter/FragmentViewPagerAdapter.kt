@@ -16,8 +16,8 @@ class FragmentViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Life
 
     override fun createFragment(position: Int): Fragment {
         return when(position) {
-            0 -> FragmentPlaylists.newInstance()
-            else -> FragmentTracks.newInstance()
+            0 -> FragmentTracks.newInstance()
+            else -> FragmentPlaylists.newInstance()
         }
     }
 }

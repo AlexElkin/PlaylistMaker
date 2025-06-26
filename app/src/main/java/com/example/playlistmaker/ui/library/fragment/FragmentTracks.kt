@@ -10,17 +10,24 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FragmentTracks: Fragment() {
 
-    companion object {
-        fun newInstance() = FragmentTracks()
-    }
-    private lateinit var binding: FragmentTracksBinding
+    private var _binding: FragmentTracksBinding? = null
+    private val binding get() = _binding!!
     private val viewModel: FragmentPlaylistsViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentTracksBinding.inflate(inflater, container, false)
+        _binding = FragmentTracksBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    companion object {
+        fun newInstance() = FragmentTracks()
     }
 }

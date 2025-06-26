@@ -2,18 +2,12 @@ package com.example.playlistmaker.ui.library.activity
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.commit
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityLibraryBinding
 import com.example.playlistmaker.ui.library.adapter.FragmentViewPagerAdapter
-import com.example.playlistmaker.ui.library.fragment.FragmentTracks
 import com.example.playlistmaker.ui.main.activity.MainActivity
 import com.example.playlistmaker.ui.settings.viewmodel.LibraryViewModel
-import com.example.playlistmaker.ui.settings.viewmodel.SettingsViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -29,8 +23,8 @@ class ActivityLibrary : AppCompatActivity() {
         binding.viewPager.adapter = FragmentViewPagerAdapter(supportFragmentManager, lifecycle)
         tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             when(position) {
-                0 -> tab.text = "Избранные треки"
-                1 -> tab.text = "Плейлисты"
+                0 -> tab.text = getString(R.string.favorite_tracks)
+                1 -> tab.text = getString(R.string.playlists)
             }
         }
         tabMediator.attach()
