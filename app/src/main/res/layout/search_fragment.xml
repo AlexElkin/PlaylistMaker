@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/search_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.search.activity.SearchActivity"
     android:orientation="vertical">
 
     <LinearLayout
@@ -12,14 +11,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-
-        <ImageButton
-            android:id="@+id/activity_search_button_back"
-            style="@style/style_toolBar_button_back"
-            android:contentDescription="@string/button_back"/>
-
         <TextView
-            android:id="@+id/activity_search_textView_search"
+            android:id="@+id/textView_search"
             android:text="@string/search"
             style="@style/style_toolBar_textView"
             android:contentDescription="@string/search_label"/>
@@ -36,7 +29,7 @@
         >
 
         <EditText
-            android:id="@+id/activity_search_editText"
+            android:id="@+id/editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autofillHints="@string/search"
@@ -57,7 +50,7 @@
             tools:ignore="TouchTargetSizeCheck"/>
 
         <ImageView
-            android:id="@+id/activity_search_clearIcon"
+            android:id="@+id/clearIcon"
             android:layout_gravity="end|center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -74,7 +67,7 @@
 
 
     <TextView
-        android:id="@+id/activity_search_TextView_You_were_looking"
+        android:id="@+id/textView_You_were_looking"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/You_were_looking"
@@ -86,7 +79,7 @@
         android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/activity_search_recyclerView"
+        android:id="@+id/recyclerView"
         android:layout_marginTop="@dimen/_16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -96,7 +89,7 @@
 
 
     <Button
-        android:id="@+id/activity_search_clear_history"
+        android:id="@+id/clear_history"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -116,7 +109,7 @@
         android:visibility="gone"/>
 
     <ImageView
-        android:id="@+id/activity_search_imageView_Error"
+        android:id="@+id/imageView_Error"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:src = "@drawable/no_internet"
@@ -125,7 +118,7 @@
         android:visibility="gone"/>
 
     <TextView
-        android:id="@+id/activity_search_textView_Error"
+        android:id="@+id/textView_Error"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/no_internet"
@@ -136,7 +129,7 @@
         android:visibility="gone"/>
 
     <Button
-        android:id="@+id/activity_search_button_update"
+        android:id="@+id/button_update"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav"
+    app:startDestination="@id/search_fragment">
+
+    <fragment
+        android:id="@+id/search_fragment"
+        android:name="com.example.playlistmaker.ui.search.activity.SearchFragment"
+        android:label="SearchFragment"
+        tools:layout="@layout/search_fragment">
+        <action
+            android:id="@+id/action_searchFragment_to_audioPlayerFragment"
+            app:destination="@id/audio_player_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/library_fragment"
+        android:name="com.example.playlistmaker.ui.library.activity.LibraryFragment"
+        android:label="LibraryFragment"
+        tools:layout="@layout/library_fragment">
+        <action
+            android:id="@+id/action_libraryFragment_to_fragmentTracks"
+            app:destination="@id/fragment_tracks"
+            />
+        <action
+            android:id="@+id/action_libraryFragment_to_fragmentPlaylists"
+            app:destination="@id/fragment_playlists"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/settings_fragment"
+        android:name="com.example.playlistmaker.ui.settings.activity.SettingsFragment"
+        android:label="SettingsFragment"
+        tools:layout="@layout/settings_fragment"/>
+    <fragment
+        android:id="@+id/audio_player_fragment"
+        android:name="com.example.playlistmaker.ui.player.activity.AudioPlayerFragment"
+        android:label="audio_player_fragment"
+        tools:layout="@layout/audio_player_fragment" />
+    <fragment
+        android:id="@+id/fragment_tracks"
+        android:name="com.example.playlistmaker.ui.library.fragment.FragmentTracks"
+        android:label="FragmentTracks"
+        tools:layout="@layout/fragment_tracks"/>
+    <fragment
+        android:id="@+id/fragment_playlists"
+        android:name="com.example.playlistmaker.ui.library.fragment.FragmentPlaylists"
+        android:label="FragmentPlaylists"
+        tools:layout="@layout/fragment_playlists"/>
+</navigation>

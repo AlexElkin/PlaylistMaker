@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/settings_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -12,15 +13,8 @@
         android:orientation="horizontal">
 
 
-        <ImageButton
-            android:id="@+id/activity_settings_button_back"
-            style="@style/style_toolBar_button_back"
-            android:contentDescription="@string/button_back">
-
-        </ImageButton>
-
         <TextView
-            android:id="@+id/activity_settings_textView_settings"
+            android:id="@+id/textView_settings"
             android:text="@string/settings"
             style="@style/style_toolBar_textView">
 
@@ -29,7 +23,7 @@
     </LinearLayout>
 
     <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/activity_settings_switch_theme"
+        android:id="@+id/switch_theme"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingVertical="@dimen/settings_padding_20"
@@ -47,7 +41,7 @@
 
 
     <TextView
-        android:id="@+id/activity_settings_textView_share_the_app"
+        android:id="@+id/textView_share_the_app"
         style="@style/style_textView_activity_settings"
         android:text="@string/share_the_app"
         app:drawableEndCompat="@drawable/to_share">
@@ -55,7 +49,7 @@
     </TextView>
 
     <TextView
-        android:id="@+id/activity_settings_textView_write_to_support"
+        android:id="@+id/textView_write_to_support"
         style="@style/style_textView_activity_settings"
         android:text="@string/write_to_support"
         app:drawableEndCompat="@drawable/support">
@@ -63,7 +57,7 @@
     </TextView>
 
     <TextView
-        android:id="@+id/activity_settings_textView_user_agreement"
+        android:id="@+id/textView_user_agreement"
         style="@style/style_textView_activity_settings"
         android:text="@string/user_agreement"
         app:drawableEndCompat="@drawable/arrow">

@@ -5,51 +5,55 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.data.CORNER_RADIUS_DP_LOGO_500
 import com.example.playlistmaker.data.TRACK
 import com.example.playlistmaker.data.search.Track
-import com.example.playlistmaker.databinding.ActivityAudioPlayerBinding
+import com.example.playlistmaker.databinding.AudioPlayerFragmentBinding
 import com.example.playlistmaker.ui.player.view_model.PlayerViewModel
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class AudioPlayerActivity : AppCompatActivity() {
+class AudioPlayerFragment : Fragment() {
+
     private val viewModel: PlayerViewModel by viewModel {
         parametersOf(getTrack())
     }
-    private lateinit var binding: ActivityAudioPlayerBinding
+    private lateinit var binding: AudioPlayerFragmentBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
-        binding = ActivityAudioPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        binding = AudioPlayerFragmentBinding.inflate(inflater, container, false)
         initViews()
         observeViewModel()
         setupTrackInfo(getTrack())
+        return binding.root
     }
 
     private fun getTrack(): Track {
+        val args = arguments ?: throw IllegalStateException("Arguments not found")
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(TRACK, Track::class.java)
+            args.getParcelable(TRACK, Track::class.java)
         } else {
             @Suppress("DEPRECATION")
-            intent.getParcelableExtra(TRACK)
-        } ?: run {
-            finish()
-            throw IllegalStateException("Track not found")
-        }
+            args.getParcelable(TRACK)
+        } ?: throw IllegalStateException("Track not found")
     }
+
     private fun initViews() {
-        binding.buttonBack.setOnClickListener { finish() }
+        binding.buttonBack.setOnClickListener { parentFragmentManager.popBackStack()  }
         binding.playTrack.setOnClickListener { viewModel.playbackControl() }
     }
 
     private fun observeViewModel() {
-        viewModel.playbackState.observe(this) { state ->
+        viewModel.playbackState.observe(viewLifecycleOwner) { state ->
             binding.playTrack.setImageResource(
                 when (state) {
                     PlayerViewModel.PlaybackState.PLAYING -> R.drawable.track_pause
@@ -58,7 +62,7 @@ class AudioPlayerActivity : AppCompatActivity() {
             )
         }
 
-        viewModel.currentPosition.observe(this) { position ->
+        viewModel.currentPosition.observe(viewLifecycleOwner) { position ->
             binding.trackPlaybackTime.text = formatTrackTime(position.toLong())
         }
     }
@@ -75,8 +79,8 @@ class AudioPlayerActivity : AppCompatActivity() {
             trackName.isSelected = true
 
             val imageUrl = track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg")
-            val cornerRadiusPx = CORNER_RADIUS_DP_LOGO_500.dpToPx(this@AudioPlayerActivity)
-            Glide.with(this@AudioPlayerActivity)
+            val cornerRadiusPx = CORNER_RADIUS_DP_LOGO_500.dpToPx(requireContext())
+            Glide.with(requireContext())
                 .load(imageUrl)
                 .error(R.drawable.placeholder)
                 .transform(RoundedCornersTransformation(cornerRadiusPx, 0))
