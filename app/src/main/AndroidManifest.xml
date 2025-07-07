@@ -17,7 +17,8 @@
         android:theme="@style/Base.Theme.PlaylistMaker.Activity">
         <activity
             android:name=".ui.main.activity.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustNothing">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

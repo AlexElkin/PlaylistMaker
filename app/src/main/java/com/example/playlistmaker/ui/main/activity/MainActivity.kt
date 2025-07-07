@@ -1,6 +1,7 @@
 package com.example.playlistmaker.ui.main.activity
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -13,12 +14,24 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        binding.containerView
         setContentView(binding.root)
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.container_view) as NavHostFragment
+
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.container_view) as NavHostFragment
         val navController = navHostFragment.navController
         binding.bottomNavigationView.setupWithNavController(navController)
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.settings_fragment,
+                R.id.search_fragment,
+                R.id.library_fragment -> {
+                    binding.bottomNavigationView.visibility = View.VISIBLE
+                }
+                else -> {
+                    binding.bottomNavigationView.visibility = View.GONE
+                }
+            }
+        }
     }
-
 
 }
