@@ -28,5 +28,12 @@
         app:itemBackground="@color/iconColorWhiteBlack"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:labelVisibilityMode="labeled"
+        app:elevation="8dp"
+        app:itemHorizontalTranslationEnabled="true"
+        app:itemIconSize="24dp"
+        app:itemRippleColor="@color/iconColorWhiteBlack"
+        style="@style/NoHighlightBottomNav"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

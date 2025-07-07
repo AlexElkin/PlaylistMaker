@@ -89,7 +89,7 @@ class SettingsFragment : Fragment() {
                 if (isDark) AppCompatDelegate.MODE_NIGHT_YES
                 else AppCompatDelegate.MODE_NIGHT_NO
             )
-            binding.root.animate().alpha(1f).setDuration(150)
+            binding.root.animate().alpha(1f).duration = 150
         }
     }
 

@@ -11,7 +11,8 @@
         android:id="@+id/library_fragment"
         android:icon="@drawable/media_library"
         android:title="@string/library"
-        app:iconTint="@color/bottom_nav_icon_color"/>
+        app:iconTint="@color/bottom_nav_icon_color"
+        />
 
     <item
         android:id="@+id/settings_fragment"

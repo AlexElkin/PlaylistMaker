@@ -104,5 +104,10 @@
         <item name="android:focusableInTouchMode">true</item>
         <item name="android:scrollHorizontally">true</item>
     </style>
-
+    <style name="NoHighlightBottomNav" parent="Widget.MaterialComponents.BottomNavigationView">
+        <!-- Убираем обводку и подсветку -->
+        <item name="itemBackground">@android:color/transparent</item>
+        <item name="itemRippleColor">@android:color/transparent</item>
+        <item name="android:selectableItemBackground">@null</item>
+    </style>
 </resources>
