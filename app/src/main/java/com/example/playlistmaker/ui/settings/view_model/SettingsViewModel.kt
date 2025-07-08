@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.domain.settings.SettingRepository
+import com.example.playlistmaker.ui.utils.SingleLiveEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +15,7 @@ class SettingsViewModel(private val settingRepository: SettingRepository) : View
     private val _themeState = MutableStateFlow(settingRepository.getTheme())
     val themeState: StateFlow<Boolean> = _themeState.asStateFlow()
 
-    private val _navigationEvent = MutableLiveData<NavigationEvent>()
+    private val _navigationEvent = SingleLiveEvent<NavigationEvent>()
     val navigationEvent: LiveData<NavigationEvent> = _navigationEvent
 
     private val _toastMessage = MutableLiveData<String?>()
