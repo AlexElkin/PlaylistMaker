@@ -11,6 +11,7 @@
     <color name="black">#1A1B22</color>
     <color name="gray">#AEAFB4</color>
     <color name="blue">#3772E7</color>
+    <color name="pink">#FFFF00FF</color>
 
     <color name="switch_thumb_inactive_color">#AEAFB4</color>
     <color name="switch_thumb_active_color">#3772E7</color>
