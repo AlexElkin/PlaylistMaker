@@ -1,7 +1,6 @@
 package com.example.playlistmaker.ui.search.activity
 
 import android.content.Context.INPUT_METHOD_SERVICE
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -19,7 +18,6 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.data.TRACK
 import com.example.playlistmaker.data.search.Track
 import com.example.playlistmaker.databinding.SearchFragmentBinding
-import com.example.playlistmaker.ui.player.activity.AudioPlayerFragment
 import com.example.playlistmaker.ui.search.adapter.SearchAdapter
 import com.example.playlistmaker.ui.search.view_model.SearchState
 import com.example.playlistmaker.ui.search.view_model.SearchViewModel

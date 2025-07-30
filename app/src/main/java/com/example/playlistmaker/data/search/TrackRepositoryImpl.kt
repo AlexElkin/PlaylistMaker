@@ -3,13 +3,15 @@ package com.example.playlistmaker.data.search
 
 import com.example.playlistmaker.data.search.network.NetworkClient
 import com.example.playlistmaker.domain.player.api.TrackRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.io.IOException
 //Реализация репозитория для работы с сетью, только получает данные
 class TrackRepositoryImpl(private val networkClient: NetworkClient) : TrackRepository {
-    override suspend fun searchTrack(expression: String): List<Track> {
+    override suspend fun searchTrack(expression: String): Flow<List<Track>> = flow {
         val response = networkClient.doRequest(TrackSearchRequest(expression))
-        return when (response.resultCode) {
-            200 -> (response as TrackResponse).results.map {
+        when (response.resultCode) {
+            200 -> {val tracks = ( response as TrackResponse).results.map {
                 Track(
                     it.trackName,
                     it.artistName,
@@ -22,6 +24,7 @@ class TrackRepositoryImpl(private val networkClient: NetworkClient) : TrackRepos
                     it.previewUrl
                 )
             }
+            emit(tracks)}
 
             -1 -> throw NoInternetException()
             else -> throw Exception("Server error: ${response.errorMsg}")
