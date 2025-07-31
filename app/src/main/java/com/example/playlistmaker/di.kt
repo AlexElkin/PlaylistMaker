@@ -29,6 +29,8 @@ import com.example.playlistmaker.ui.search.view_model.SearchViewModel
 import com.example.playlistmaker.ui.settings.viewmodel.LibraryViewModel
 import com.example.playlistmaker.ui.settings.viewmodel.SettingsViewModel
 import com.example.playlistmaker.ui.utils.Debouncer
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.currentCoroutineContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -113,6 +115,6 @@ val dispatcherProvider = module {
 
 val debouncer = module {
     factory {
-        Debouncer(SEARCH_DEBOUNCE_DELAY)
+        Debouncer(SEARCH_DEBOUNCE_DELAY, MainScope() )
     }
 }

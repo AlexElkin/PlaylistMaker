@@ -1,18 +1,19 @@
 package com.example.playlistmaker.ui.player.view_model
 
-
-import android.os.Handler
-import android.os.Looper
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.data.REQUESTING_PLAYBACK_TIME
 import com.example.playlistmaker.data.search.Track
 import com.example.playlistmaker.domain.player.impl.PlayerUseCase
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val playerUseCase: PlayerUseCase,
-    private val track: Track
+    track: Track
 ) : ViewModel() {
     private val _playbackState = MutableLiveData<PlaybackState>()
     val playbackState: LiveData<PlaybackState> = _playbackState
@@ -20,26 +21,21 @@ class PlayerViewModel(
     private val _currentPosition = MutableLiveData<Int>()
     val currentPosition: LiveData<Int> = _currentPosition
 
-    private val handler = Handler(Looper.getMainLooper())
-    private lateinit var updateTimeRunnable: Runnable
+    private var updateJob: Job? = null
 
     init {
         _playbackState.value = PlaybackState.IDLE
         preparePlayer(track.previewUrl)
-        initTimeUpdater()
     }
-
-    fun getTrack(): Track = track
 
     private fun preparePlayer(url: String) {
         playerUseCase.preparePlayer(
             url,
-            onPrepared = {
-                _playbackState.postValue(PlaybackState.PREPARED)
-            },
+            onPrepared = { _playbackState.postValue(PlaybackState.PREPARED) },
             onCompletion = {
                 _playbackState.postValue(PlaybackState.COMPLETED)
                 _currentPosition.postValue(0)
+                stopTimeUpdater()
             }
         )
     }
@@ -50,31 +46,38 @@ class PlayerViewModel(
                 playerUseCase.pause()
                 _playbackState.value = PlaybackState.PAUSED
                 _currentPosition.value = playerUseCase.getCurrentPosition()
-                handler.removeCallbacks(updateTimeRunnable)
+                stopTimeUpdater()
             }
             PlaybackState.PREPARED, PlaybackState.PAUSED -> {
                 playerUseCase.seekTo(currentPosition.value ?: 0)
                 playerUseCase.play()
                 _playbackState.value = PlaybackState.PLAYING
-                handler.post(updateTimeRunnable)
+                startTimeUpdater()
             }
             else -> {}
         }
     }
 
-    private fun initTimeUpdater() {
-        updateTimeRunnable = Runnable {
-            if (playbackState.value == PlaybackState.PLAYING) {
+    private fun startTimeUpdater() {
+        stopTimeUpdater()
+        updateJob?.cancel()
+        updateJob = viewModelScope.launch {
+            while (playbackState.value == PlaybackState.PLAYING) {
                 _currentPosition.postValue(playerUseCase.getCurrentPosition())
+                delay(REQUESTING_PLAYBACK_TIME)
             }
-            handler.postDelayed(updateTimeRunnable, REQUESTING_PLAYBACK_TIME)
         }
+    }
+
+    private fun stopTimeUpdater() {
+        updateJob?.cancel()
+        updateJob = null
     }
 
     override fun onCleared() {
         super.onCleared()
         playerUseCase.release()
-        handler.removeCallbacks(updateTimeRunnable)
+        stopTimeUpdater()
     }
 
     enum class PlaybackState {

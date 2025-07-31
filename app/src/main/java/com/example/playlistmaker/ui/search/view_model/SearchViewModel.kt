@@ -1,14 +1,14 @@
 package com.example.playlistmaker.ui.search.view_model
 
-
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.data.search.Track
-import com.example.playlistmaker.domain.search.api.SearchInteractor
 import com.example.playlistmaker.domain.search.SearchResult
+import com.example.playlistmaker.domain.search.api.SearchInteractor
 import com.example.playlistmaker.ui.utils.Debouncer
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
@@ -22,6 +22,8 @@ class SearchViewModel(
     private val _navigateToPlayer = MutableLiveData<Track?>()
     val navigateToPlayer: LiveData<Track?> = _navigateToPlayer
 
+    private var searchJob: Job? = null
+
     fun searchDebounced(query: String) {
         if (query.isEmpty()) {
             showHistory()
@@ -32,43 +34,44 @@ class SearchViewModel(
         debouncer.debounce {
             performSearch(query)
         }
+
     }
 
-    fun performSearch(query: String) {
-        viewModelScope.launch {
-            try {
-                val result = searchInteractor.search(query)
+    internal fun performSearch(query: String) {
+        searchJob?.cancel()
+
+        searchJob = viewModelScope.launch {
+            try {val result = searchInteractor.search(query)
                 when (result) {
                     is SearchResult.Success -> {
-                        if (result.tracks.isEmpty()) {
-                            _state.postValue(SearchState.Empty)
-                        } else {
-                            _state.postValue(SearchState.Content(result.tracks))
+                        result.tracks.collect { tracks ->
+                            _state.value = if (tracks.isEmpty()) {
+                                SearchState.Empty
+                            } else {
+                                SearchState.Content(tracks)
+                            }
                         }
                     }
                     is SearchResult.Error -> {
-                        _state.postValue(
-                            when (result.error) {
-                                SearchResult.ErrorType.NO_INTERNET -> SearchState.NoInternet
-                                else -> SearchState.Error
-                            }
-                        )
+                        _state.value = when (result.error) {
+                            SearchResult.ErrorType.NO_INTERNET -> SearchState.NoInternet
+                            SearchResult.ErrorType.UNKNOWN -> SearchState.Error
+                        }
                     }
                 }
             } catch (e: Exception) {
-                _state.postValue(SearchState.Error)
+                _state.value = SearchState.Error
             }
         }
     }
 
-
     fun showHistory() {
         viewModelScope.launch {
-            val history = searchInteractor.getSearchHistory()?:mutableListOf()
-            if (history.isNotEmpty()) {
-                _state.postValue(SearchState.History(history))
+            val history = searchInteractor.getSearchHistory() ?: emptyList()
+            _state.value = if (history.isNotEmpty()) {
+                SearchState.History(history)
             } else {
-                _state.postValue(SearchState.Default)
+                SearchState.Default
             }
         }
     }
@@ -76,7 +79,7 @@ class SearchViewModel(
     fun clearHistory() {
         viewModelScope.launch {
             searchInteractor.clearSearchHistory()
-            _state.postValue(SearchState.Default)
+            _state.value = SearchState.Default
         }
     }
 
