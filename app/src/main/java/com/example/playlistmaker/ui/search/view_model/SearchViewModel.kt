@@ -41,14 +41,10 @@ class SearchViewModel(
         searchJob?.cancel()
 
         searchJob = viewModelScope.launch {
-            println("SEARCH_STARTED: $query")
             try {val result = searchInteractor.search(query)
-                println(result)
                 when (result) {
                     is SearchResult.Success -> {
-                        println("+")
                         result.tracks.collect { tracks ->
-                            println("SEARCH_STARTED3: $tracks")
                             _state.value = if (tracks.isEmpty()) {
                                 SearchState.Empty
                             } else {

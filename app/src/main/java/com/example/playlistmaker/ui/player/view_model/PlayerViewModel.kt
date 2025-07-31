@@ -60,6 +60,7 @@ class PlayerViewModel(
 
     private fun startTimeUpdater() {
         stopTimeUpdater()
+        updateJob?.cancel()
         updateJob = viewModelScope.launch {
             while (playbackState.value == PlaybackState.PLAYING) {
                 _currentPosition.postValue(playerUseCase.getCurrentPosition())
