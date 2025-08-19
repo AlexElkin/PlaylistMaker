@@ -12,6 +12,7 @@
     <color name="gray">#AEAFB4</color>
     <color name="blue">#3772E7</color>
     <color name="pink">#FFFF00FF</color>
+    <color name="red">#F56B6C</color>
 
     <color name="switch_thumb_inactive_color">#AEAFB4</color>
     <color name="switch_thumb_active_color">#3772E7</color>

@@ -23,32 +23,48 @@ class SearchViewModel(
     val navigateToPlayer: LiveData<Track?> = _navigateToPlayer
 
     private var searchJob: Job? = null
+    private var currentQuery: String = ""
 
     fun searchDebounced(query: String) {
+        searchJob?.cancel()
+        currentQuery = query
+
         if (query.isEmpty()) {
             showHistory()
             return
+        } else {
+            _state.value = SearchState.Loading
+            debouncer.debounce { performSearch(query) }
         }
-
-        _state.value = SearchState.Loading
-        debouncer.debounce {
-            performSearch(query)
-        }
-
     }
 
     internal fun performSearch(query: String) {
+        if (query != currentQuery || query.trim().isEmpty()) {
+            if (currentQuery.isEmpty()) {
+                showHistory()
+            }
+            return
+        }
+
         searchJob?.cancel()
 
         searchJob = viewModelScope.launch {
-            try {val result = searchInteractor.search(query)
+            try {
+                val result = searchInteractor.search(query)
+
+                if (query != currentQuery) {
+                    return@launch
+                }
+
                 when (result) {
                     is SearchResult.Success -> {
                         result.tracks.collect { tracks ->
-                            _state.value = if (tracks.isEmpty()) {
-                                SearchState.Empty
-                            } else {
-                                SearchState.Content(tracks)
+                            if (query == currentQuery) {
+                                _state.value = if (tracks.isEmpty()) {
+                                    SearchState.Empty
+                                } else {
+                                    SearchState.Content(tracks)
+                                }
                             }
                         }
                     }
@@ -60,7 +76,9 @@ class SearchViewModel(
                     }
                 }
             } catch (e: Exception) {
-                _state.value = SearchState.Error
+                if (query == currentQuery) {
+                    _state.value = SearchState.Error
+                }
             }
         }
     }
