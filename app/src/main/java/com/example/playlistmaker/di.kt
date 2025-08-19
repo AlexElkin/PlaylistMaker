@@ -16,6 +16,7 @@ import com.example.playlistmaker.data.search.network.RetrofitNetworkClient
 import com.example.playlistmaker.data.settings.SettingRepositoryImpl
 import com.example.playlistmaker.domain.db.TracksDbInteractor
 import com.example.playlistmaker.data.db.TracksDbRepositoryImpl
+import com.example.playlistmaker.data.db.entity.TrackDao
 import com.example.playlistmaker.domain.db.TracksDbInteractorImpl
 import com.example.playlistmaker.domain.player.api.DispatcherProvider
 import com.example.playlistmaker.domain.player.api.PlayerRepository
@@ -45,8 +46,11 @@ val dataModule = module {
     factory<SharedPreferences> { SharedPreferencesImpl(get()) }
     factory<NetworkClient> {RetrofitNetworkClient()}
     single {Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")
-        .build()
-} }
+        .build()}
+    single<TrackDao> {
+        get<AppDatabase>().trackDao()
+    }
+}
 
 val repositoryModule = module {
 

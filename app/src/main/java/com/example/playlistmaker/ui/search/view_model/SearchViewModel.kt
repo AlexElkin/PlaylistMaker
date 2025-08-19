@@ -8,6 +8,7 @@ import com.example.playlistmaker.data.search.Track
 import com.example.playlistmaker.domain.search.SearchResult
 import com.example.playlistmaker.domain.search.api.SearchInteractor
 import com.example.playlistmaker.ui.utils.Debouncer
+import com.example.playlistmaker.ui.utils.SingleLiveEvent
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -19,8 +20,8 @@ class SearchViewModel(
     private val _state = MutableLiveData<SearchState>()
     val state: LiveData<SearchState> = _state
 
-    private val _navigateToPlayer = MutableLiveData<Track?>()
-    val navigateToPlayer: LiveData<Track?> = _navigateToPlayer
+    private val _navigateToPlayer = SingleLiveEvent<Track?>()
+    val navigateToPlayer: SingleLiveEvent<Track?> = _navigateToPlayer
 
     private var searchJob: Job? = null
     private var currentQuery: String = ""

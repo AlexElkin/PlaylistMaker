@@ -5,7 +5,17 @@ import com.example.playlistmaker.data.search.Track
 
 class TrackDbConvertor {
     fun mapToTrack(track: TrackEntity): Track {
-        return Track(track.trackName,track.artistName,track.collectionName,track.trackTimeMillis,track.releaseDate,track.primaryGenreName,track.country,track.artworkUrl100,track.previewUrl)
+        return Track(
+            trackName = track.trackName,
+            artistName = track.artistName,
+            collectionName = track.collectionName,
+            trackTimeMillis = track.trackTimeMillis,
+            releaseDate = track.releaseDate,
+            primaryGenreName = track.primaryGenreName,
+            country = track.country,
+            artworkUrl100 = track.artworkUrl100,
+            previewUrl = track.previewUrl
+        )
     }
 
     fun mapToTrackEntity(track: Track): TrackEntity {
