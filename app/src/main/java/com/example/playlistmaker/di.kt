@@ -2,14 +2,22 @@ package com.example.playlistmaker
 
 import android.media.AudioAttributes
 import android.media.MediaPlayer
+import androidx.room.Room
 import com.example.playlistmaker.data.SEARCH_DEBOUNCE_DELAY
 import com.example.playlistmaker.data.SharedPreferences
 import com.example.playlistmaker.data.SharedPreferencesImpl
+import com.example.playlistmaker.data.db.TracksDbRepository
+import com.example.playlistmaker.data.db.convertor.TrackDbConvertor
+import com.example.playlistmaker.data.db.entity.AppDatabase
 import com.example.playlistmaker.data.search.Track
 import com.example.playlistmaker.data.search.TrackRepositoryImpl
 import com.example.playlistmaker.data.search.network.NetworkClient
 import com.example.playlistmaker.data.search.network.RetrofitNetworkClient
 import com.example.playlistmaker.data.settings.SettingRepositoryImpl
+import com.example.playlistmaker.domain.db.TracksDbInteractor
+import com.example.playlistmaker.data.db.TracksDbRepositoryImpl
+import com.example.playlistmaker.data.db.entity.TrackDao
+import com.example.playlistmaker.domain.db.TracksDbInteractorImpl
 import com.example.playlistmaker.domain.player.api.DispatcherProvider
 import com.example.playlistmaker.domain.player.api.PlayerRepository
 import com.example.playlistmaker.domain.player.api.TrackRepository
@@ -30,27 +38,44 @@ import com.example.playlistmaker.ui.settings.viewmodel.LibraryViewModel
 import com.example.playlistmaker.ui.settings.viewmodel.SettingsViewModel
 import com.example.playlistmaker.ui.utils.Debouncer
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.currentCoroutineContext
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-val settingRepository = module {
-    factory<SettingRepository>{ SettingRepositoryImpl(get()) }
-}
-
-val sharedPreferences = module {
+val dataModule = module {
     factory<SharedPreferences> { SharedPreferencesImpl(get()) }
+    factory<NetworkClient> {RetrofitNetworkClient()}
+    single {Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")
+        .build()}
+    single<TrackDao> {
+        get<AppDatabase>().trackDao()
+    }
 }
 
-val playerRepository = module {
+val repositoryModule = module {
+
+    factory { TrackDbConvertor() }
+    factory<SettingRepository>{ SettingRepositoryImpl(get()) }
     factory<PlayerRepository> { PlayerRepositoryImpl(get()) }
-}
-
-val playerUseCase = module {
     factory { PlayerUseCase(get()) }
+    factory<SearchHistoryRepository> { SearchHistoryRepositoryImpl(get()) }
+    factory<TrackRepository> { TrackRepositoryImpl(get()) }
+    factory<SearchInteractor> { SearchInteractorImpl(get(),get(),get()) }
+    single<TracksDbRepository> {
+        TracksDbRepositoryImpl(get(), get())
+    }
+    single<TracksDbInteractor> {
+        TracksDbInteractorImpl(get())
+    }
 }
 
-val playerModule = module {
+val uiModule = module {
+    viewModel { SettingsViewModel(get()) }
+    viewModel { SearchViewModel(get(),get()) }
+    viewModel { MainViewModel() }
+    viewModel { LibraryViewModel() }
+    viewModel { FragmentPlaylistsViewModel() }
+    viewModel { FragmentTracksViewModel() }
     factory { MediaPlayer().apply {
         setAudioAttributes(
             AudioAttributes.Builder()
@@ -62,50 +87,9 @@ val playerModule = module {
     factory { (track: Track) ->
         PlayerViewModel(get(), track)
     }
+
 }
 
-val searchHistoryRepository = module {
-    factory<SearchHistoryRepository> { SearchHistoryRepositoryImpl(get()) }
-}
-
-val searchInteractor = module {
-    factory<SearchInteractor> { SearchInteractorImpl(get(),get(),get()) }
-}
-
-val trackRepository = module {
-    factory<TrackRepository> { TrackRepositoryImpl(get()) }
-}
-
-val settingsViewModel = module {
-    viewModel { SettingsViewModel(get()) }
-}
-
-val searchViewModel = module {
-    viewModel { SearchViewModel(get(),get()) }
-}
-
-val mainViewModel = module {
-    viewModel { MainViewModel() }
-}
-
-val libraryViewModel = module {
-    viewModel { LibraryViewModel() }
-}
-
-val fragmentPlaylistsViewModel = module {
-    viewModel { FragmentPlaylistsViewModel() }
-}
-
-val fragmentTracksViewModel = module {
-    viewModel { FragmentTracksViewModel() }
-}
-
-
-val networkModule = module {
-    factory<NetworkClient> {
-        RetrofitNetworkClient()
-    }
-}
 
 val dispatcherProvider = module {
     factory<DispatcherProvider> {
@@ -114,7 +98,5 @@ val dispatcherProvider = module {
 }
 
 val debouncer = module {
-    factory {
-        Debouncer(SEARCH_DEBOUNCE_DELAY, MainScope() )
-    }
+    factory { Debouncer(SEARCH_DEBOUNCE_DELAY, MainScope() ) }
 }

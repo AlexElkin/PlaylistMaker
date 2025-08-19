@@ -8,6 +8,7 @@ import com.example.playlistmaker.data.search.Track
 import com.example.playlistmaker.domain.search.SearchResult
 import com.example.playlistmaker.domain.search.api.SearchInteractor
 import com.example.playlistmaker.ui.utils.Debouncer
+import com.example.playlistmaker.ui.utils.SingleLiveEvent
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -19,36 +20,52 @@ class SearchViewModel(
     private val _state = MutableLiveData<SearchState>()
     val state: LiveData<SearchState> = _state
 
-    private val _navigateToPlayer = MutableLiveData<Track?>()
-    val navigateToPlayer: LiveData<Track?> = _navigateToPlayer
+    private val _navigateToPlayer = SingleLiveEvent<Track?>()
+    val navigateToPlayer: SingleLiveEvent<Track?> = _navigateToPlayer
 
     private var searchJob: Job? = null
+    private var currentQuery: String = ""
 
     fun searchDebounced(query: String) {
+        searchJob?.cancel()
+        currentQuery = query
+
         if (query.isEmpty()) {
             showHistory()
             return
+        } else {
+            _state.value = SearchState.Loading
+            debouncer.debounce { performSearch(query) }
         }
-
-        _state.value = SearchState.Loading
-        debouncer.debounce {
-            performSearch(query)
-        }
-
     }
 
     internal fun performSearch(query: String) {
+        if (query != currentQuery || query.trim().isEmpty()) {
+            if (currentQuery.isEmpty()) {
+                showHistory()
+            }
+            return
+        }
+
         searchJob?.cancel()
 
         searchJob = viewModelScope.launch {
-            try {val result = searchInteractor.search(query)
+            try {
+                val result = searchInteractor.search(query)
+
+                if (query != currentQuery) {
+                    return@launch
+                }
+
                 when (result) {
                     is SearchResult.Success -> {
                         result.tracks.collect { tracks ->
-                            _state.value = if (tracks.isEmpty()) {
-                                SearchState.Empty
-                            } else {
-                                SearchState.Content(tracks)
+                            if (query == currentQuery) {
+                                _state.value = if (tracks.isEmpty()) {
+                                    SearchState.Empty
+                                } else {
+                                    SearchState.Content(tracks)
+                                }
                             }
                         }
                     }
@@ -60,7 +77,9 @@ class SearchViewModel(
                     }
                 }
             } catch (e: Exception) {
-                _state.value = SearchState.Error
+                if (query == currentQuery) {
+                    _state.value = SearchState.Error
+                }
             }
         }
     }

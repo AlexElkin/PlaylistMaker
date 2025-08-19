@@ -4,19 +4,24 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.data.CORNER_RADIUS_DP_LOGO_500
 import com.example.playlistmaker.data.TRACK
 import com.example.playlistmaker.data.search.Track
 import com.example.playlistmaker.databinding.AudioPlayerFragmentBinding
+import com.example.playlistmaker.domain.db.TracksDbInteractor
 import com.example.playlistmaker.ui.player.view_model.PlayerViewModel
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -26,6 +31,7 @@ class AudioPlayerFragment : Fragment() {
         parametersOf(getTrack())
     }
     private lateinit var binding: AudioPlayerFragmentBinding
+    private val tracksDbInteractor: TracksDbInteractor by inject()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -49,6 +55,7 @@ class AudioPlayerFragment : Fragment() {
     private fun initViews() {
         binding.buttonBack.setOnClickListener { parentFragmentManager.popBackStack()  }
         binding.playTrack.setOnClickListener { viewModel.playbackControl() }
+        binding.likeTrack.setOnClickListener { controlFavoritesTracks(getTrack()) }
     }
 
     private fun observeViewModel() {
@@ -76,7 +83,7 @@ class AudioPlayerFragment : Fragment() {
             textViewGenreResult.text = track.primaryGenreName
             textViewCountryResult.text = track.country
             trackName.isSelected = true
-
+            controlImageFavoritesTracks(track)
             val imageUrl = track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg")
             val cornerRadiusPx = CORNER_RADIUS_DP_LOGO_500.dpToPx(requireContext())
             Glide.with(requireContext())
@@ -94,6 +101,27 @@ class AudioPlayerFragment : Fragment() {
         val minutes = totalSeconds / 60
         val seconds = totalSeconds % 60
         return String.format("%02d:%02d", minutes, seconds)
+    }
+
+    fun controlFavoritesTracks(track: Track) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            tracksDbInteractor.updateStatusTrack(track)
+            controlImageFavoritesTracks(track)
+        }
+
+    }
+
+    fun controlImageFavoritesTracks(track: Track) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            if (tracksDbInteractor.getStatusTrack(track)) {
+                Log.d("тест","true")
+                binding.likeTrack.setImageResource(R.drawable.like_activated)
+            } else {
+                Log.d("тест","false")
+                binding.likeTrack.setImageResource(R.drawable.like_track)
+            }
+        }
+
     }
 
     private fun Float.dpToPx(context: Context): Int {
