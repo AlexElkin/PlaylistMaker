@@ -1,4 +1,4 @@
-package com.example.playlistmaker.domain.player.api
+package com.example.playlistmaker.data.search.api
 
 import com.example.playlistmaker.data.search.Track
 import kotlinx.coroutines.flow.Flow

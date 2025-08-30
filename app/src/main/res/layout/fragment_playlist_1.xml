@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/iconColorWhiteBlack"
+    android:orientation="vertical"
+    tools:context=".ui.library.fragment.FragmentPlaylist">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/iconColorWhiteBlack">
+
+        <ImageButton
+            android:id="@+id/button_back"
+            style="@style/style_toolBar_button_back"
+            android:contentDescription="@string/button_back"/>
+
+        <TextView
+            android:id="@+id/textView_search"
+            android:text="@string/playlist"
+            style="@style/style_toolBar_textView"
+            android:contentDescription="@string/search_label"/>
+
+    </LinearLayout>
+
+    <!-- RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="@dimen/_16dp"/>
+
+</LinearLayout>

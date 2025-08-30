@@ -24,20 +24,29 @@
     <string name="no_track" translatable="false">Ничего не нашлось</string>
     <string name="You_were_looking" translatable="false">Вы искали</string>
     <string name="clear_history" translatable="false">Очистить историю</string>
-    <string name="track_name">Название трека</string>
-    <string name="executor">Исполнитель</string>
-    <string name="time">00:00</string>
-    <string name="Country">Страна</string>
-    <string name="Track_Time">Длительность</string>
-    <string name="Album">Альбом</string>
-    <string name="Year">Год</string>
-    <string name="Genre">Жанр</string>
-    <string name="update">Обновить</string>
-    <string name="library_empty">Ваша медиатека пуста</string>
-    <string name="image_no_tracks">image no tracks</string>
-    <string name="new_playlists">Новый плейлист</string>
-    <string name="library">Медиатека</string>
-    <string name="you_havent_created_any_playlists">Вы не создали\n ни одного плейлиста</string>
-    <string name="favorite_tracks">Избранные треки</string>
-    <string name="playlists">Плейлисты</string>
+    <string name="track_name" translatable="false">Название трека</string>
+    <string name="executor" translatable="false">Исполнитель</string>
+    <string name="time" translatable="false">00:00</string>
+    <string name="Country" translatable="false">Страна</string>
+    <string name="Track_Time" translatable="false">Длительность</string>
+    <string name="Album" translatable="false">Альбом</string>
+    <string name="Year" translatable="false">Год</string>
+    <string name="Genre" translatable="false">Жанр</string>
+    <string name="update" translatable="false">Обновить</string>
+    <string name="library_empty" translatable="false">Ваша медиатека пуста</string>
+    <string name="image_no_tracks" translatable="false">image no tracks</string>
+    <string name="new_playlists" translatable="false">Новый плейлист</string>
+    <string name="library" translatable="false">Медиатека</string>
+    <string name="you_havent_created_any_playlists" translatable="false">Вы не создали\n ни одного плейлиста</string>
+    <string name="favorite_tracks" translatable="false">Избранные треки</string>
+    <string name="playlists" translatable="false">Плейлисты</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <string name="new_playlist" translatable="false">Новый плейлист</string>
+    <string name="description">Описание</string>
+    <string name="create">Создать</string>
+    <string name="title">Название</string>
+    <string name="tracks_count">Количество треков</string>
+    <string name="add_to_playlist">Добавить в плейлист</string>
+    <string name="playlist">Плейлист</string>
 </resources>

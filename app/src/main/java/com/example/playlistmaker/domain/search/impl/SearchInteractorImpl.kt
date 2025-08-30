@@ -2,12 +2,12 @@ package com.example.playlistmaker.domain.search.impl
 
 
 
-import com.example.playlistmaker.data.search.NoInternetException
+import com.example.playlistmaker.data.search.impl.NoInternetException
 import com.example.playlistmaker.data.search.Track
 import com.example.playlistmaker.domain.player.api.DispatcherProvider
-import com.example.playlistmaker.domain.player.api.TrackRepository
+import com.example.playlistmaker.data.search.api.TrackRepository
 import com.example.playlistmaker.domain.search.SearchResult
-import com.example.playlistmaker.domain.search.api.SearchHistoryRepository
+import com.example.playlistmaker.data.search.api.SearchHistoryRepository
 import com.example.playlistmaker.domain.search.api.SearchInteractor
 import kotlinx.coroutines.withContext
 

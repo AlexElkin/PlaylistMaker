@@ -28,7 +28,8 @@ class TrackDbConvertor {
             primaryGenreName = track.primaryGenreName,
             country = track.country,
             artworkUrl100 = track.artworkUrl100,
-            previewUrl = track.previewUrl)
+            previewUrl = track.previewUrl,
+            like = false)
     }
 
     fun mapToTrackList(trackEntities: List<TrackEntity>): List<Track> {

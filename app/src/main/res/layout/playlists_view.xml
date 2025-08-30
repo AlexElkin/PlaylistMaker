@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:paddingHorizontal="4dp"
+    android:paddingVertical="@dimen/_8dp">
+    <ImageView
+        android:id="@+id/playlist_icon"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/rounded_background_8dp"
+        android:src="@drawable/placeholder">
+
+    </ImageView>
+    <TextView
+        android:id="@+id/playlist_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:fontFamily="@font/ys_display_regular"
+        app:layout_constraintTop_toBottomOf="@id/playlist_icon"
+        app:layout_constraintStart_toStartOf="@id/playlist_icon"
+        app:layout_constraintEnd_toEndOf="@id/playlist_icon"
+        android:text="@string/track_name">
+    </TextView>
+    <TextView
+        android:id="@+id/tracks_count"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/tracks_count"
+        android:textSize="12sp"
+        android:fontFamily="@font/ys_display_regular"
+        app:layout_constraintTop_toBottomOf="@id/playlist_name"
+        app:layout_constraintStart_toStartOf="@id/playlist_name"
+        app:layout_constraintEnd_toEndOf="@id/playlist_name">
+    </TextView>
+</androidx.constraintlayout.widget.ConstraintLayout>
