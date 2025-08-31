@@ -48,13 +48,8 @@ class PlaylistsAdapter(
 
             Glide.with(itemView.context)
                 .load(playlists.picture)
-                .placeholder(R.drawable.placeholder)
-                .apply(RequestOptions.bitmapTransform(RoundedCorners(8)))
+                .placeholder(R.drawable.placeholder2)
                 .into(imageButton)
-        }
-
-        fun dpToPx(context: Context, dp: Int): Int {
-            return (dp * context.resources.displayMetrics.density).toInt()
         }
     }
 

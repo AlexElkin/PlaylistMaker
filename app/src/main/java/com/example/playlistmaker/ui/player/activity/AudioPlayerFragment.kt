@@ -20,6 +20,7 @@ import com.example.playlistmaker.data.CORNER_RADIUS_DP_LOGO_500
 import com.example.playlistmaker.data.TRACK
 import com.example.playlistmaker.data.search.Track
 import com.example.playlistmaker.databinding.AudioPlayerFragmentBinding
+import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.example.playlistmaker.domain.db.PlaylistDbInteractor
 import com.example.playlistmaker.domain.db.TracksDbInteractor
 import com.example.playlistmaker.domain.db.TracksInPlaylistDbInteractor
@@ -37,7 +38,9 @@ class AudioPlayerFragment : Fragment() {
     private val viewModel: PlayerViewModel by viewModel {
         parametersOf(getTrack())
     }
-    private lateinit var binding: AudioPlayerFragmentBinding
+    private var _binding: AudioPlayerFragmentBinding? = null
+    private val binding get() = _binding!!
+
     private val tracksDbInteractor: TracksDbInteractor by inject()
     private val playlistDbInteractor: PlaylistDbInteractor by inject()
 
@@ -46,7 +49,7 @@ class AudioPlayerFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
-        binding = AudioPlayerFragmentBinding.inflate(inflater, container, false)
+        _binding = AudioPlayerFragmentBinding.inflate(inflater, container, false)
         binding.createPlaylist.setOnClickListener { findNavController().navigate(R.id.action_audio_player_fragment_to_newPlaylistFragment) }
         createBottomSheet()
         setupResultListener()
@@ -194,5 +197,10 @@ class AudioPlayerFragment : Fragment() {
             this,
             context.resources.displayMetrics
         ).toInt()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

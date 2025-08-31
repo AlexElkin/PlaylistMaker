@@ -63,6 +63,15 @@
         <item name="android:src">@drawable/defaul_logo</item>
     </style>
 
+    <style name="style_track_view_logo2" parent="style_track_view_arrow">
+        <item name="android:layout_width">45dp</item>
+        <item name="android:layout_height">45dp</item>
+        <item name="android:paddingVertical">@dimen/_8dp</item>
+        <item name="android:layout_marginLeft">@dimen/_12dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:src">@drawable/defaul_logo</item>
+    </style>
+
 
     <style name="style_activity_search_textView_16sp">
         <item name="android:layout_width">match_parent</item>

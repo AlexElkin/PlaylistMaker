@@ -14,21 +14,20 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.data.PLAYLIST
 import com.example.playlistmaker.data.TRACK
 import com.example.playlistmaker.data.library.Playlists
-import com.example.playlistmaker.data.search.Track
 import com.example.playlistmaker.databinding.FragmentPlaylist1Binding
 import com.example.playlistmaker.domain.db.PlaylistDbInteractor
 import com.example.playlistmaker.domain.db.TracksDbInteractor
 import com.example.playlistmaker.domain.db.TracksInPlaylistDbInteractor
 import com.example.playlistmaker.ui.library.view_model.FragmentPlaylistViewModel
 import com.example.playlistmaker.ui.search.adapter.SearchAdapter
-import com.example.playlistmaker.ui.search.view_model.SearchState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FragmentPlaylist : Fragment() {
-    private lateinit var binding: FragmentPlaylist1Binding
+    private var _binding: FragmentPlaylist1Binding? = null
+    private val binding get() = _binding!!
     private val viewModel: FragmentPlaylistViewModel by viewModel()
     private val tracksDbInteractor: TracksDbInteractor by inject()
     private val playlistDbInteractor: PlaylistDbInteractor by inject()
@@ -39,7 +38,7 @@ class FragmentPlaylist : Fragment() {
     )
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = FragmentPlaylist1Binding.inflate(inflater, container, false)
+        _binding = FragmentPlaylist1Binding.inflate(inflater, container, false)
         binding.buttonBack.setOnClickListener { findNavController().popBackStack() }
         setupRecyclerView()
         observeViewModel()
@@ -82,4 +81,9 @@ class FragmentPlaylist : Fragment() {
             }
         }
     }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
 }

@@ -20,17 +20,22 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.example.playlistmaker.R
 import com.example.playlistmaker.data.library.Playlists
 import com.example.playlistmaker.databinding.NewPlaylistFragmentBinding
 import com.example.playlistmaker.domain.db.PlaylistDbInteractor
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.getValue
+import kotlin.io.encoding.Base64
 
 class NewPlaylistFragment : Fragment() {
 
@@ -69,7 +74,9 @@ class NewPlaylistFragment : Fragment() {
 
         val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             if (uri != null) {
-                binding.icon.setImageURI(uri)
+                Glide.with(requireContext())
+                    .load(uri)
+                    .into(binding.icon)
                 url = uri
                 photo = true
                 updateButtonState()
@@ -155,13 +162,13 @@ class NewPlaylistFragment : Fragment() {
 
     private fun showExitDialog() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Завершить создание плейлиста?")
-            .setMessage("Все несохраненные данные будут потеряны")
-            .setNeutralButton("Отмена") { dialog, _ -> dialog.dismiss() }
-            .setNegativeButton("Завершить") { _, _ -> exit() }
+            .setTitle(getString(R.string.finish_creating_a_playlist))
+            .setMessage(getString(R.string.all_unsaved_data_will_be_lost))
+            .setNeutralButton(getString(R.string.cancellation)) { dialog, _ -> dialog.dismiss() }
+            .setNegativeButton(getString(R.string.complete)) { _, _ -> exit() }
             .show()
     }
-
+    //Переделать позже в data слой сохранение в файл
     private fun Uri.saveImageToPrivateStorage(title: String): String {
         val context = requireContext()
         try {

@@ -5,28 +5,42 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:paddingHorizontal="4dp"
     android:paddingVertical="@dimen/_8dp">
-    <ImageView
-        android:id="@+id/playlist_icon"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/playlist_icon2"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:scaleType="centerCrop"
+        app:cardCornerRadius="8dp"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardElevation="0dp"
+        app:strokeColor="@color/gray"
+        app:strokeWidth="1dp"
+        android:paddingHorizontal="@dimen/_8dp"
+        android:paddingVertical="@dimen/_16dp"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:background="@drawable/rounded_background_8dp"
-        android:src="@drawable/placeholder">
+        app:layout_constraintEnd_toEndOf="parent">
+        <ImageView
+            android:id="@+id/playlist_icon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:background="@drawable/rounded_background_8dp_2"
+            android:src="@drawable/placeholder2">
 
-    </ImageView>
+        </ImageView>
+
+    </androidx.cardview.widget.CardView>
+
     <TextView
         android:id="@+id/playlist_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="12sp"
         android:fontFamily="@font/ys_display_regular"
-        app:layout_constraintTop_toBottomOf="@id/playlist_icon"
-        app:layout_constraintStart_toStartOf="@id/playlist_icon"
-        app:layout_constraintEnd_toEndOf="@id/playlist_icon"
+        app:layout_constraintTop_toBottomOf="@id/playlist_icon2"
+        app:layout_constraintStart_toStartOf="@id/playlist_icon2"
+        app:layout_constraintEnd_toEndOf="@id/playlist_icon2"
         android:text="@string/track_name">
     </TextView>
     <TextView

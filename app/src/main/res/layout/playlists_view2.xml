@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:theme="@style/Base.Theme.PlaylistMaker.WhiteAndBlack">
+    android:theme="@style/Base.Theme.PlaylistMaker.WhiteAndBlack"
+    tools:ignore="RtlSymmetry">
     <ImageButton
         android:id="@+id/playlist_icon2"
-        style="@style/style_track_view_logo"
+        style="@style/style_track_view_logo2"
         android:background="@drawable/rounded_background_2dp"
         android:contentDescription="@string/logo"
-        android:layout_marginVertical="@dimen/_8dp">
+        android:layout_marginVertical="@dimen/_8dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/placeholder2">
 
     </ImageButton>
 

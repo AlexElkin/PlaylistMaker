@@ -14,19 +14,21 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.playlistmaker.R
+import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.example.playlistmaker.databinding.SettingsFragmentBinding
 import com.example.playlistmaker.ui.settings.viewmodel.SettingsViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsFragment : Fragment() {
-
+    private var _binding: SettingsFragmentBinding? = null
+    private val binding get() = _binding!!
     private var isSwitchProgrammaticUpdate = false
-    private lateinit var binding: SettingsFragmentBinding
+
     private val viewModel: SettingsViewModel by viewModel()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = SettingsFragmentBinding.inflate(inflater, container, false)
+        _binding = SettingsFragmentBinding.inflate(inflater, container, false)
         setupClickListeners()
         observeViewModel()
         return binding.root
@@ -108,5 +110,10 @@ class SettingsFragment : Fragment() {
 
     private fun openUserAgreement() {
         startActivity(Intent(Intent.ACTION_VIEW, getString(R.string.link_practicum_offer).toUri()))
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
