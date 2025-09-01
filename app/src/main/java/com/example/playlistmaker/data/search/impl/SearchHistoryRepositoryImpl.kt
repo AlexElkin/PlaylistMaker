@@ -1,16 +1,16 @@
-package com.example.playlistmaker.domain.search.impl
+package com.example.playlistmaker.data.search.impl
 
 import com.example.playlistmaker.data.KEY_SEARCH_HISTORY
 import com.example.playlistmaker.data.MAX_HISTORY_ITEMS
 import com.example.playlistmaker.data.SharedPreferences
+import com.example.playlistmaker.data.search.api.SearchHistoryRepository
 import com.example.playlistmaker.data.search.Track
-import com.example.playlistmaker.domain.search.api.SearchHistoryRepository
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-
 class SearchHistoryRepositoryImpl (private val sharedPreferences: SharedPreferences,
-                                   private val gson: Gson = Gson()): SearchHistoryRepository {
+                                   private val gson: Gson = Gson()
+): SearchHistoryRepository {
     override suspend fun getSearchHistory(): List<Track>? {
         var json = sharedPreferences.getString(KEY_SEARCH_HISTORY, null) ?: return null
         return gson.fromJson(json, object : TypeToken<List<Track>>() {}.type)
@@ -43,7 +43,3 @@ class SearchHistoryRepositoryImpl (private val sharedPreferences: SharedPreferen
 
 
 }
-
-
-
-

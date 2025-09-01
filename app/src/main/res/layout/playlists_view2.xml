@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:theme="@style/Base.Theme.PlaylistMaker.WhiteAndBlack"
+    tools:ignore="RtlSymmetry">
+    <ImageButton
+        android:id="@+id/playlist_icon2"
+        style="@style/style_track_view_logo2"
+        android:background="@drawable/rounded_background_2dp"
+        android:contentDescription="@string/logo"
+        android:layout_marginVertical="@dimen/_8dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/placeholder2">
+
+    </ImageButton>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="@dimen/_8dp"
+        android:paddingVertical="@dimen/_14dp"
+        android:paddingHorizontal="@dimen/_8dp"
+        >
+        <TextView
+            android:id="@+id/playlist_name2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:text="@string/track_name"
+            style="@style/style_activity_search_textView_16sp">
+
+        </TextView>
+        <TextView
+            android:id="@+id/tracks_count2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/executor"
+            android:maxLines="1"
+            style="@style/style_activity_search_textView_12sp">
+        </TextView>
+
+
+    </LinearLayout>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

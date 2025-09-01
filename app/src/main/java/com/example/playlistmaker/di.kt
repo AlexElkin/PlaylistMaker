@@ -6,29 +6,42 @@ import androidx.room.Room
 import com.example.playlistmaker.data.SEARCH_DEBOUNCE_DELAY
 import com.example.playlistmaker.data.SharedPreferences
 import com.example.playlistmaker.data.SharedPreferencesImpl
-import com.example.playlistmaker.data.db.TracksDbRepository
+import com.example.playlistmaker.data.db.repository.TracksDbRepository
+import com.example.playlistmaker.data.db.repository.TracksDbRepositoryImpl
+import com.example.playlistmaker.data.db.convertor.PlaylistDbConvertor
 import com.example.playlistmaker.data.db.convertor.TrackDbConvertor
-import com.example.playlistmaker.data.db.entity.AppDatabase
+import com.example.playlistmaker.data.db.AppDatabase
+import com.example.playlistmaker.data.db.convertor.TracksInPlaylistConvertor
+import com.example.playlistmaker.data.db.dao.PlaylistDao
+import com.example.playlistmaker.data.db.dao.TrackDao
+import com.example.playlistmaker.data.db.dao.TracksInPlaylistDao
+import com.example.playlistmaker.data.db.repository.TracksInPlaylistRepository
+import com.example.playlistmaker.data.db.repository.TracksInPlaylistRepositoryImpl
+import com.example.playlistmaker.data.library.PlaylistDbRepository
+import com.example.playlistmaker.data.library.PlaylistDbRepositoryImpl
 import com.example.playlistmaker.data.search.Track
-import com.example.playlistmaker.data.search.TrackRepositoryImpl
+import com.example.playlistmaker.data.search.api.SearchHistoryRepository
+import com.example.playlistmaker.data.search.api.TrackRepository
+import com.example.playlistmaker.data.search.impl.SearchHistoryRepositoryImpl
+import com.example.playlistmaker.data.search.impl.TrackRepositoryImpl
 import com.example.playlistmaker.data.search.network.NetworkClient
 import com.example.playlistmaker.data.search.network.RetrofitNetworkClient
 import com.example.playlistmaker.data.settings.SettingRepositoryImpl
+import com.example.playlistmaker.domain.db.PlaylistDbInteractor
+import com.example.playlistmaker.domain.db.PlaylistDbInteractorImpl
 import com.example.playlistmaker.domain.db.TracksDbInteractor
-import com.example.playlistmaker.data.db.TracksDbRepositoryImpl
-import com.example.playlistmaker.data.db.entity.TrackDao
 import com.example.playlistmaker.domain.db.TracksDbInteractorImpl
+import com.example.playlistmaker.domain.db.TracksInPlaylistDbInteractor
+import com.example.playlistmaker.domain.db.TracksInPlaylistDbInteractorImpl
 import com.example.playlistmaker.domain.player.api.DispatcherProvider
 import com.example.playlistmaker.domain.player.api.PlayerRepository
-import com.example.playlistmaker.domain.player.api.TrackRepository
 import com.example.playlistmaker.domain.player.impl.DispatcherProviderImpl
 import com.example.playlistmaker.domain.player.impl.PlayerRepositoryImpl
 import com.example.playlistmaker.domain.player.impl.PlayerUseCase
-import com.example.playlistmaker.domain.search.api.SearchHistoryRepository
 import com.example.playlistmaker.domain.search.api.SearchInteractor
-import com.example.playlistmaker.domain.search.impl.SearchHistoryRepositoryImpl
 import com.example.playlistmaker.domain.search.impl.SearchInteractorImpl
 import com.example.playlistmaker.domain.settings.SettingRepository
+import com.example.playlistmaker.ui.library.view_model.FragmentPlaylistViewModel
 import com.example.playlistmaker.ui.library.view_model.FragmentPlaylistsViewModel
 import com.example.playlistmaker.ui.library.view_model.FragmentTracksViewModel
 import com.example.playlistmaker.ui.main.view_model.MainViewModel
@@ -39,7 +52,7 @@ import com.example.playlistmaker.ui.settings.viewmodel.SettingsViewModel
 import com.example.playlistmaker.ui.utils.Debouncer
 import kotlinx.coroutines.MainScope
 import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val dataModule = module {
@@ -47,11 +60,40 @@ val dataModule = module {
     factory<NetworkClient> {RetrofitNetworkClient()}
     single {Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")
         .build()}
+}
+
+val databaseModule = module {
+    single<AppDatabase> {
+        Room.databaseBuilder(
+            androidContext(),
+            AppDatabase::class.java,
+            "app_database"
+        )
+            .fallbackToDestructiveMigration()
+            .build()
+    }
     single<TrackDao> {
         get<AppDatabase>().trackDao()
     }
-}
 
+    single<PlaylistDao> {
+        get<AppDatabase>().playlistDao()
+    }
+
+    single<TracksInPlaylistDao> {
+        get<AppDatabase>().tracksInPlaylistDao()
+    }
+}
+val playlistsModule = module {
+    factory { PlaylistDbConvertor() }
+    factory { TracksInPlaylistConvertor() }
+    factory { PlaylistDbRepositoryImpl(get(),get()) }
+    factory { PlaylistDbInteractorImpl(PlaylistDbRepositoryImpl(get(),get())) }
+    factory <PlaylistDbInteractor>{PlaylistDbInteractorImpl(PlaylistDbRepositoryImpl(get(),get()))}
+    factory <TracksInPlaylistDbInteractor>{ TracksInPlaylistDbInteractorImpl(get()) }
+    factory <TracksInPlaylistRepository>{ TracksInPlaylistRepositoryImpl(get(),get()) }
+    factory <PlaylistDbRepository>{ PlaylistDbRepositoryImpl(get(),get())}
+}
 val repositoryModule = module {
 
     factory { TrackDbConvertor() }
@@ -70,12 +112,13 @@ val repositoryModule = module {
 }
 
 val uiModule = module {
-    viewModel { SettingsViewModel(get()) }
-    viewModel { SearchViewModel(get(),get()) }
-    viewModel { MainViewModel() }
-    viewModel { LibraryViewModel() }
-    viewModel { FragmentPlaylistsViewModel() }
-    viewModel { FragmentTracksViewModel() }
+    viewModelOf(::SettingsViewModel)
+    viewModelOf(::MainViewModel)
+    viewModelOf(::SearchViewModel)
+    viewModelOf(::LibraryViewModel)
+    viewModelOf(::FragmentPlaylistsViewModel)
+    viewModelOf(::FragmentTracksViewModel)
+    viewModelOf(::FragmentPlaylistViewModel)
     factory { MediaPlayer().apply {
         setAudioAttributes(
             AudioAttributes.Builder()
@@ -85,7 +128,11 @@ val uiModule = module {
         )
     } }
     factory { (track: Track) ->
-        PlayerViewModel(get(), track)
+        PlayerViewModel(
+            get(), get(), get(),
+            tracksInPlaylistDbInteractor = get(),
+            track = track
+        )
     }
 
 }

@@ -63,6 +63,15 @@
         <item name="android:src">@drawable/defaul_logo</item>
     </style>
 
+    <style name="style_track_view_logo2" parent="style_track_view_arrow">
+        <item name="android:layout_width">45dp</item>
+        <item name="android:layout_height">45dp</item>
+        <item name="android:paddingVertical">@dimen/_8dp</item>
+        <item name="android:layout_marginLeft">@dimen/_12dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:src">@drawable/defaul_logo</item>
+    </style>
+
 
     <style name="style_activity_search_textView_16sp">
         <item name="android:layout_width">match_parent</item>
@@ -105,9 +114,13 @@
         <item name="android:scrollHorizontally">true</item>
     </style>
     <style name="NoHighlightBottomNav" parent="Widget.MaterialComponents.BottomNavigationView">
-        <!-- Убираем обводку и подсветку -->
         <item name="itemBackground">@android:color/transparent</item>
         <item name="itemRippleColor">@android:color/transparent</item>
         <item name="android:selectableItemBackground">@null</item>
+    </style>
+    <style name="ShapeAppearance.MyApp.BottomSheet" parent="ShapeAppearance.MaterialComponents.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerSizeTopRight">16dp</item>
     </style>
 </resources>

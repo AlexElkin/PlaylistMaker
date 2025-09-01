@@ -4,15 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.playlistmaker.R
-import com.example.playlistmaker.data.TRACK
 import com.example.playlistmaker.data.search.Track
 import com.example.playlistmaker.databinding.FragmentTracksBinding
 import com.example.playlistmaker.domain.db.TracksDbInteractor
@@ -53,7 +49,7 @@ class FragmentTracks : Fragment() {
 
     private fun observeTracks() {
         viewLifecycleOwner.lifecycleScope.launch {
-            tracksDbInteractor.getTracks().collectLatest { tracks ->
+            tracksDbInteractor.getLikeTrack(true).collectLatest { tracks ->
                 adapter.updateTracks(tracks.reversed())
                 updateUI(tracks)
             }
@@ -82,7 +78,6 @@ class FragmentTracks : Fragment() {
     private fun observeViewModel() {
         viewModel.navigateToPlayer.observe(viewLifecycleOwner) { track ->
             track?.let {
-                // Получите родительский фрагмент и вызовите его метод навигации
                 (parentFragment as? LibraryFragment)?.navigateToPlayer(it)
                 viewModel.onPlayerNavigated()
             }

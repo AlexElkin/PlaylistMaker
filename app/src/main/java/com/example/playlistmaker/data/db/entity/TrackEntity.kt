@@ -28,5 +28,7 @@ data class TrackEntity(
     @ColumnInfo(name = "artwork_url_100")
     val artworkUrl100: String,
     @ColumnInfo(name = "preview_url")
-    val previewUrl: String
+    val previewUrl: String,
+    @ColumnInfo(name = "like")
+    val like: Boolean
 ) : Parcelable

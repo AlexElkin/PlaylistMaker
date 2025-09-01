@@ -1,8 +1,11 @@
-package com.example.playlistmaker.data.search
+package com.example.playlistmaker.data.search.impl
 
 
+import com.example.playlistmaker.data.search.Track
 import com.example.playlistmaker.data.search.network.NetworkClient
-import com.example.playlistmaker.domain.player.api.TrackRepository
+import com.example.playlistmaker.data.search.api.TrackRepository
+import com.example.playlistmaker.data.search.TrackResponse
+import com.example.playlistmaker.data.search.TrackSearchRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.IOException

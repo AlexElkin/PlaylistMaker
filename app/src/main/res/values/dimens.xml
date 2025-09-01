@@ -9,4 +9,5 @@
     <dimen name="_14dp">14dp</dimen>
     <dimen name="_18dp">18dp</dimen>
     <dimen name="_12dp">12dp</dimen>
+    <dimen name="_32dp">32dp</dimen>
 </resources>

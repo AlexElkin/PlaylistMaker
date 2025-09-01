@@ -25,14 +25,15 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class SearchFragment : Fragment(){
-    private lateinit var binding: SearchFragmentBinding
+    private var _binding: SearchFragmentBinding? = null
+    private val binding get() = _binding!!
     private val viewModel: SearchViewModel by viewModel()
     private val adapter = SearchAdapter(
         emptyList(), onItemClickListener = { track -> viewModel.onTrackClicked(track)}
     )
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = SearchFragmentBinding.inflate(inflater, container, false)
+        _binding = SearchFragmentBinding.inflate(inflater, container, false)
         setupRecyclerView()
         setupSearchField()
         setupClickListeners()
@@ -198,5 +199,9 @@ class SearchFragment : Fragment(){
             clearHistory.isVisible = tracks.isNotEmpty()
         }
         adapter.updateTracks(tracks)
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

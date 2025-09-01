@@ -20,6 +20,9 @@
         android:label="LibraryFragment"
         tools:layout="@layout/library_fragment">
         <action
+            android:id="@+id/action_library_fragment_to_fragment_playlist"
+            app:destination="@id/fragmentPlaylist" />
+        <action
             android:id="@+id/action_libraryFragment_to_fragmentTracks"
             app:destination="@id/fragment_tracks"
             />
@@ -40,7 +43,11 @@
         android:id="@+id/audio_player_fragment"
         android:name="com.example.playlistmaker.ui.player.activity.AudioPlayerFragment"
         android:label="audio_player_fragment"
-        tools:layout="@layout/audio_player_fragment" />
+        tools:layout="@layout/audio_player_fragment" >
+        <action
+            android:id="@+id/action_audio_player_fragment_to_newPlaylistFragment"
+            app:destination="@id/newPlaylistFragment" />
+    </fragment>
     <fragment
         android:id="@+id/fragment_tracks"
         android:name="com.example.playlistmaker.ui.library.fragment.FragmentTracks"
@@ -54,5 +61,34 @@
         android:id="@+id/fragment_playlists"
         android:name="com.example.playlistmaker.ui.library.fragment.FragmentPlaylists"
         android:label="FragmentPlaylists"
-        tools:layout="@layout/fragment_playlists"/>
+        tools:layout="@layout/fragment_playlists">
+        <action
+            android:id="@+id/action_fragment_playlists_to_newPlaylistFragment"
+            app:destination="@id/newPlaylistFragment" />
+        <argument
+            android:name="playlistTitle"
+            app:argType="string"
+            android:defaultValue=""/>
+        <action
+            android:id="@+id/action_fragment_playlists_to_fragmentPlaylist"
+            app:destination="@id/fragmentPlaylist" />
+    </fragment>
+    <fragment
+        android:id="@+id/newPlaylistFragment"
+        android:name="com.example.playlistmaker.ui.library.fragment.NewPlaylistFragment"
+        android:label="new_playlist_fragment"
+        tools:layout="@layout/new_playlist_fragment">
+    <action
+        android:id="@+id/action_newPlaylistFragment_to_fragmentPlaylists"
+        app:popUpTo="@id/fragment_playlists"
+        app:popUpToInclusive="false" /></fragment>
+    <fragment
+        android:id="@+id/fragmentPlaylist"
+        android:name="com.example.playlistmaker.ui.library.fragment.FragmentPlaylist"
+        android:label="fragment_playlist_1"
+        tools:layout="@layout/fragment_playlist_1" >
+        <action
+            android:id="@+id/action_fragmentPlaylist_to_audio_player_fragment"
+            app:destination="@id/audio_player_fragment" />
+    </fragment>
 </navigation>

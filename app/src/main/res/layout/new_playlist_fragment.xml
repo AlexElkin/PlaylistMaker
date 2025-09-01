@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/iconColorWhiteBlack"
+    tools:context=".ui.library.fragment.NewPlaylistFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/button_back"
+            style="@style/style_toolBar_button_back"
+            android:contentDescription="@string/button_back" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/new_playlist"
+            android:gravity="center_vertical"
+            android:textSize="@dimen/_22sp"
+            android:paddingHorizontal="@dimen/_12dp"
+            android:fontFamily="@font/ys_display_medium" />
+
+    </LinearLayout>
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="8dp"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardElevation="0dp"
+        app:strokeColor="@color/gray"
+        app:strokeWidth="1dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="26dp"
+        android:paddingVertical="@dimen/_16dp"
+        android:paddingHorizontal="@dimen/_8dp">
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/icon"
+            android:maxHeight="370dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/icon_with_dashed_border"
+            android:scaleType="centerCrop"/>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- Title Input -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_16dp"
+        android:layout_marginTop="@dimen/_32dp"
+        android:layout_marginBottom="@dimen/_16dp"
+        app:boxBackgroundMode="outline"
+        app:boxStrokeColor="@color/edit_box_selector"
+        app:hintTextColor="@color/hint_color_selector"
+        app:boxStrokeWidth="1dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editText_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/title"
+            android:inputType="text"
+            android:maxLines="1"
+            android:autofillHints="title" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_16dp"
+        app:boxBackgroundMode="outline"
+        app:boxStrokeColor="@color/edit_box_selector"
+        app:hintTextColor="@color/hint_color_selector"
+        app:boxStrokeWidth="1dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editText_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/description"
+            android:inputType="text"
+            android:maxLines="1"
+            android:autofillHints="description" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_create"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/create"
+        style="@style/Widget.MaterialComponents.Button"
+        app:backgroundTint="@color/gray"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:clickable="false"
+        android:textAllCaps="false"
+        android:fontFamily="@font/ys_display_regular"
+        android:layout_marginVertical="@dimen/_32dp"
+        android:layout_marginHorizontal="@dimen/_16dp"
+        android:enabled="false"/>
+
+</LinearLayout>

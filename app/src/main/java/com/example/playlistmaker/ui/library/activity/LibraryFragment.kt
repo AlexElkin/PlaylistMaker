@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.data.TRACK
@@ -25,6 +26,11 @@ class LibraryFragment : Fragment() {
         super.onCreate(savedInstanceState)
         binding = LibraryFragmentBinding.inflate(inflater, container, false)
         binding.viewPager.adapter = FragmentViewPagerAdapter(childFragmentManager, lifecycle)
+        requireActivity().supportFragmentManager.setFragmentResultListener("navigate_to_new_playlist", this) { requestKey, bundle ->
+            if (requestKey == "navigate_to_new_playlist") {
+                findNavController().navigate(R.id.newPlaylistFragment)
+            }
+        }
         tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             when(position) {
                 0 -> tab.text = getString(R.string.favorite_tracks)
@@ -36,7 +42,7 @@ class LibraryFragment : Fragment() {
     }
     fun navigateToPlayer(track: Track) {
         findNavController().navigate(
-            R.id.action_library_fragment_to_audio_player_fragment, // Добавьте этот action!
+            R.id.action_library_fragment_to_audio_player_fragment,
             bundleOf(TRACK to track)
         )
     }

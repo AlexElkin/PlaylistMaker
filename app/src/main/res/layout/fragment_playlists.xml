@@ -6,7 +6,6 @@
     android:orientation="vertical">
 
 
-
     <Button
         android:id="@+id/button_new_playlists"
         android:layout_width="wrap_content"
@@ -23,7 +22,23 @@
         android:background="@drawable/rounded_background_54dp"
         app:backgroundTint="@null"/>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:paddingTop="@dimen/_8dp"
+        android:paddingHorizontal="4dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
     <TextView
+        android:id="@+id/no_tracks"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/you_havent_created_any_playlists"
