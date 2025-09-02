@@ -15,5 +15,7 @@ interface TracksDbRepository {
     suspend fun insertTrack(track: Track)
     suspend fun getIdTrack(previewUrl: String): Int
     suspend fun getStatusTrack(previewUrl: String): Boolean?
+
+    suspend fun getSumTimeTrack(ids: List<Int>): Long
     suspend fun setStatusTrack(previewUrl: String,like: Boolean)
 }

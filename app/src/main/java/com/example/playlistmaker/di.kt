@@ -90,7 +90,7 @@ val playlistsModule = module {
     factory { PlaylistDbRepositoryImpl(get(),get()) }
     factory { PlaylistDbInteractorImpl(PlaylistDbRepositoryImpl(get(),get())) }
     factory <PlaylistDbInteractor>{PlaylistDbInteractorImpl(PlaylistDbRepositoryImpl(get(),get()))}
-    factory <TracksInPlaylistDbInteractor>{ TracksInPlaylistDbInteractorImpl(get()) }
+    factory <TracksInPlaylistDbInteractor>{ TracksInPlaylistDbInteractorImpl(get(),get(),get()) }
     factory <TracksInPlaylistRepository>{ TracksInPlaylistRepositoryImpl(get(),get()) }
     factory <PlaylistDbRepository>{ PlaylistDbRepositoryImpl(get(),get())}
 }

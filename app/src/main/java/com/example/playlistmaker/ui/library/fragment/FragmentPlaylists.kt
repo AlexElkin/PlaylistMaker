@@ -103,6 +103,13 @@ class FragmentPlaylists : Fragment() {
     }
 
     private fun observeViewModel() {
+        parentFragmentManager.setFragmentResultListener("playlist_changed", viewLifecycleOwner) { requestKey, _ ->
+            if (requestKey == "playlist_changed") {
+                viewLifecycleOwner.lifecycleScope.launch {
+                adapter.updatePlaylists(playlistDbInteractor.getPlaylists())}
+                }
+            }
+
 
         viewModel.navigateToPlayer.observe(viewLifecycleOwner) { playlist ->
             playlist?.let {
@@ -111,7 +118,7 @@ class FragmentPlaylists : Fragment() {
                     R.id.action_library_fragment_to_fragment_playlist,
                     bundle
                 )
-                viewModel.onPlayerNavigated()
+            viewModel.onPlayerNavigated()
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.example.playlistmaker.ui.library.activity
+package com.example.playlistmaker.ui.library.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.data.TRACK
@@ -18,13 +17,15 @@ import com.google.android.material.tabs.TabLayoutMediator
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LibraryFragment : Fragment() {
-    private lateinit var binding: LibraryFragmentBinding
+
+    private var _binding: LibraryFragmentBinding? = null
+    private val binding get() = _binding!!
     private lateinit var tabMediator: TabLayoutMediator
     private val viewModel: LibraryViewModel by viewModel()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
-        binding = LibraryFragmentBinding.inflate(inflater, container, false)
+        _binding = LibraryFragmentBinding.inflate(inflater, container, false)
         binding.viewPager.adapter = FragmentViewPagerAdapter(childFragmentManager, lifecycle)
         requireActivity().supportFragmentManager.setFragmentResultListener("navigate_to_new_playlist", this) { requestKey, bundle ->
             if (requestKey == "navigate_to_new_playlist") {
@@ -32,7 +33,7 @@ class LibraryFragment : Fragment() {
             }
         }
         tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            when(position) {
+            when (position) {
                 0 -> tab.text = getString(R.string.favorite_tracks)
                 1 -> tab.text = getString(R.string.playlists)
             }
@@ -49,7 +50,7 @@ class LibraryFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+        _binding = null
         tabMediator.detach()
     }
 }
-

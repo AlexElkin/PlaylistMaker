@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.data.search.Track
 import com.example.playlistmaker.databinding.FragmentTracksBinding
 import com.example.playlistmaker.domain.db.TracksDbInteractor
-import com.example.playlistmaker.ui.library.activity.LibraryFragment
+import com.example.playlistmaker.ui.library.fragment.LibraryFragment
 import com.example.playlistmaker.ui.library.view_model.FragmentTracksViewModel
 import com.example.playlistmaker.ui.search.adapter.SearchAdapter
 import kotlinx.coroutines.flow.collectLatest

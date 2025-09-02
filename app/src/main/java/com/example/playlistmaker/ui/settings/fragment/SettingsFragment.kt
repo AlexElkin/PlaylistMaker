@@ -1,4 +1,4 @@
-package com.example.playlistmaker.ui.settings.activity
+package com.example.playlistmaker.ui.settings.fragment
 
 import android.content.Intent
 import android.os.Bundle
@@ -14,7 +14,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.example.playlistmaker.databinding.SettingsFragmentBinding
 import com.example.playlistmaker.ui.settings.viewmodel.SettingsViewModel
 import kotlinx.coroutines.launch

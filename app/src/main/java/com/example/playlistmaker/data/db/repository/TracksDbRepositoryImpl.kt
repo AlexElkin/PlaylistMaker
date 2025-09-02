@@ -2,7 +2,6 @@ package com.example.playlistmaker.data.db.repository
 
 import com.example.playlistmaker.data.db.convertor.TrackDbConvertor
 import com.example.playlistmaker.data.db.dao.TrackDao
-import com.example.playlistmaker.data.db.entity.TrackEntity
 import com.example.playlistmaker.data.search.Track
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -49,6 +48,10 @@ class TracksDbRepositoryImpl (
 
     override suspend fun getStatusTrack(previewUrl: String): Boolean? {
         return trackDao.getStatusTrack(previewUrl)
+    }
+
+    override suspend fun getSumTimeTrack(ids: List<Int>): Long {
+        return trackDao.getSumTimeTrack(ids)
     }
 
     override suspend fun setStatusTrack(previewUrl: String, like: Boolean) {

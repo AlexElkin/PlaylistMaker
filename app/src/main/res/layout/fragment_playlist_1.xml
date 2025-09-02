@@ -1,37 +1,241 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/iconColorWhiteBlack"
     android:orientation="vertical"
-    tools:context=".ui.library.fragment.FragmentPlaylist">
+    android:background="@color/gray_light"
+    tools:context=".ui.library.fragment.FragmentPlaylist"
+    >
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/audio_player_fragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@color/iconColorWhiteBlack">
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        tools:context=".ui.player.fragment.AudioPlayerFragment">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5" />
 
         <ImageButton
             android:id="@+id/button_back"
-            style="@style/style_toolBar_button_back"
-            android:contentDescription="@string/button_back"/>
+            style="@style/style_button_back"
+            android:contentDescription="@string/button_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <ImageView
+            android:id="@+id/playlist_icon"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/logo"
+            android:scaleType="fitCenter"
+            android:src="@drawable/placeholder"
+            app:layout_constraintBottom_toTopOf="@id/guideline_horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+        </ImageView>
 
         <TextView
-            android:id="@+id/textView_search"
-            android:text="@string/playlist"
-            style="@style/style_toolBar_textView"
-            android:contentDescription="@string/search_label"/>
+            android:id="@+id/playlist_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/new_playlist"
+            android:fontFamily="@font/ys_display_bold"
+            android:textSize="24sp"
+            android:textColor="@color/black"
+            android:layout_marginHorizontal="@dimen/_16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/playlist_icon"
+            />
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/description"
+            android:textColor="@color/black"
+            android:fontFamily="@font/ys_display_regular"
+            android:textSize="18sp"
+            android:layout_marginHorizontal="@dimen/_16dp"
+            android:layout_marginTop="@dimen/_8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/playlist_name"
+            />
 
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/linear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/_8dp"
+            android:layout_marginHorizontal="@dimen/_16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/description">
+            <TextView
+                android:id="@+id/track_time_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:fontFamily="@font/ys_display_regular"
+                android:text="@string/Track_Time"
+                android:textSize="18sp"
+                android:textColor="@color/black">
+            </TextView>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/point2"
+                android:layout_margin="5dp"/>
+            <TextView
+                android:id="@+id/count_track_in_playlist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/time"
+                android:maxLines="1"
+                android:fontFamily="@font/ys_display_regular"
+                android:textSize="18sp"
+                android:textColor="@color/black">
+            </TextView>
+        </LinearLayout>
 
-    <!-- RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        <ImageView
+            android:id="@+id/share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/share"
+            android:padding="@dimen/_16dp"
+            app:layout_constraintEnd_toStartOf="@id/points"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/linear"/>
+
+        <ImageView
+            android:id="@+id/points"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/points"
+            android:padding="@dimen/_16dp"
+            app:layout_constraintStart_toEndOf="@id/share"
+            app:layout_constraintTop_toBottomOf="@id/linear"/>
+
+
+        <View
+            android:id="@+id/background_black_2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/black_251"
+            android:visibility="gone">
+
+        </View>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/standard_bottom_sheet"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="@dimen/_16dp"/>
+        android:layout_height="match_parent"
+        app:behavior_hideable="false"
+        app:behavior_peekHeight="220dp"
+        app:behavior_skipCollapsed="true"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        app:cardBackgroundColor="@color/iconColorWhiteBlack"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.MyApp.BottomSheet">
 
-</LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="12dp"
+                android:contentDescription="@null"
+                android:scaleType="center"
+                android:src="@drawable/rectangle" />
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/bottom_sheet_setting_playlist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="320dp"
+        app:cardBackgroundColor="@color/iconColorWhiteBlack"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.MyApp.BottomSheet">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="12dp"
+                android:contentDescription="@null"
+                android:scaleType="center"
+                android:src="@drawable/rectangle" />
+            <include
+                android:id="@+id/playlists_view"
+                layout="@layout/playlists_view2" />
+            <TextView
+                android:id="@+id/text_view_share"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/share"
+                android:paddingVertical="21dp"
+                android:paddingHorizontal="@dimen/_16dp"
+                android:textSize="@dimen/_16sp"
+                android:fontFamily="@font/ys_display_regular"
+                android:textColor="@color/iconColorBlackWhite"/>
+            <TextView
+                android:id="@+id/edit_Information"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/edit_Information"
+                android:paddingHorizontal="@dimen/_16dp"
+                android:paddingVertical="21dp"
+                android:textSize="@dimen/_16sp"
+                android:fontFamily="@font/ys_display_regular"
+                android:textColor="@color/iconColorBlackWhite"/>
+            <TextView
+                android:id="@+id/delete_playlist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/delete_playlist"
+                android:paddingVertical="21dp"
+                android:paddingHorizontal="@dimen/_16dp"
+                android:textSize="@dimen/_16sp"
+                android:fontFamily="@font/ys_display_regular"
+                android:textColor="@color/iconColorBlackWhite"/>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

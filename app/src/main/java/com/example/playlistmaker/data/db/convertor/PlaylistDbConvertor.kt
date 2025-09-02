@@ -8,7 +8,8 @@ class PlaylistDbConvertor {
         return Playlists(
             title = playlist.title,
             picture = playlist.picture,
-            countTracks = playlist.countTracks
+            countTracks = playlist.countTracks,
+            description = playlist.description
         )
     }
 
@@ -16,7 +17,9 @@ class PlaylistDbConvertor {
         return PlaylistsEntity(
             title = playlist.title,
             picture = playlist.picture,
-            countTracks = playlist.countTracks)
+            countTracks = playlist.countTracks,
+            description = playlist.description
+        )
     }
 
     fun mapToPlaylistList(playlistsEntity: List<PlaylistsEntity>): List<Playlists> {

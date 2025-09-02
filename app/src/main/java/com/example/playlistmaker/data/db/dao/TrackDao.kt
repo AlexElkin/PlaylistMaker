@@ -32,7 +32,8 @@ interface TrackDao {
 
     @Query("SELECT `like` FROM tracks_table WHERE preview_url = :previewUrl")
     suspend fun getStatusTrack(previewUrl: String): Boolean?
-
+    @Query("SELECT SUM(track_time_millis) FROM tracks_table WHERE  id IN (:ids)")
+    suspend fun getSumTimeTrack(ids: List<Int>): Long
     @Query("UPDATE tracks_table SET `like` = :like WHERE preview_url = :previewUrl")
     suspend fun setStatusTrack(previewUrl: String,like: Boolean)
 

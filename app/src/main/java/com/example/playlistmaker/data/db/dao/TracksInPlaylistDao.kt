@@ -11,7 +11,10 @@ interface TracksInPlaylistDao {
 
     @Query("SELECT id_track FROM track_playlist_table WHERE id_playlist = :idPlaylist")
     suspend fun getIdTrackInPlaylist(idPlaylist: Int): List<Int>
-
+    @Query("DELETE FROM track_playlist_table WHERE id_track = :idTrack")
+    suspend fun deleteTrackEntity(idTrack: Int)
+    @Query("DELETE FROM track_playlist_table WHERE id_playlist = :idPlaylist")
+    suspend fun deletePlaylist(idPlaylist: Int)
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertIdTrackInPlaylist(tracksInPlaylist: TracksInPlaylistEntity)
 
