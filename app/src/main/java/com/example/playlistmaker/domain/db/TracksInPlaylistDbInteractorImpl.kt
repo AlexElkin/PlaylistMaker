@@ -35,10 +35,12 @@ class TracksInPlaylistDbInteractorImpl(
     }
 
     override suspend fun getSumTracksTime(playlist: Playlists): String {
-        return formatTrackTime(
-            tracksDbRepository.getSumTimeTrack(
-                tracksInPlaylistRepository.getIdTrackInPlaylist(
-                    playlistDbRepository.getIdPlaylist(playlist.title)
+        return getMinutesCount(
+            formatTrackTime(
+                tracksDbRepository.getSumTimeTrack(
+                    tracksInPlaylistRepository.getIdTrackInPlaylist(
+                        playlistDbRepository.getIdPlaylist(playlist.title)
+                    )
                 )
             )
         )
@@ -52,10 +54,20 @@ class TracksInPlaylistDbInteractorImpl(
         Log.d("PlaylistDebug", "Playlist entity deleted")
     }
 
-    private fun formatTrackTime(milliseconds: Long): String {
+    private fun formatTrackTime(milliseconds: Long): Long {
         val totalSeconds = milliseconds / 1000
         val minutes = totalSeconds / 60
-        val seconds = totalSeconds % 60
-        return String.format("%02d:%02d", minutes, seconds)
+        return minutes
+    }
+
+    private fun getMinutesCount(countMinutes: Long) = when {
+        countMinutes % 10 == 1L && countMinutes % 100 != 11L ->
+            "${countMinutes} минута"
+
+        countMinutes % 10 in 2L..4L && countMinutes % 100 !in 12L..14L ->
+            "${countMinutes} минуты"
+
+        else ->
+            "${countMinutes} минут"
     }
 }

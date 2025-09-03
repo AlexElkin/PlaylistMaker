@@ -2,6 +2,7 @@ package com.example.playlistmaker.ui.library.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,6 +38,7 @@ class PlaylistsAdapter(
 
         fun bind(playlists: Playlists) {
             playlistName.text = playlists.title
+            playlistName.ellipsize = TextUtils.TruncateAt.END
             tracksCount.text = when {
                 playlists.countTracks % 10 == 1 && playlists.countTracks % 100 != 11 ->
                     "${playlists.countTracks} трек"

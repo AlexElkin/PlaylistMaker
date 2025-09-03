@@ -26,6 +26,7 @@ import com.example.playlistmaker.domain.db.TracksInPlaylistDbInteractor
 import com.example.playlistmaker.ui.library.adapter.TrackAdapter
 import com.example.playlistmaker.ui.library.view_model.FragmentPlaylistViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -41,6 +42,7 @@ class FragmentPlaylist : Fragment() {
     private val tracksInPlaylistDbInteractor: TracksInPlaylistDbInteractor by inject()
     private lateinit var adapter: TrackAdapter
     private lateinit var playlist: Playlists
+    private lateinit var bottomSheetBehavior:  BottomSheetBehavior<MaterialCardView>
 
 
     override fun onCreateView(
@@ -49,6 +51,8 @@ class FragmentPlaylist : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentPlaylist1Binding.inflate(inflater, container, false)
+        val bottomSheet = binding.bottomSheetSettingPlaylist
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         playlist = getPlaylist()
         adapter = TrackAdapter(
             tracks = emptyList(), onItemClickListener = viewModel
@@ -94,7 +98,7 @@ class FragmentPlaylist : Fragment() {
                         val idPlaylist = playlistDbInteractor.getIdPlaylist(playlist.title)
                         val trackIds = tracksInPlaylistDbInteractor.getIdTrackInPlaylist(idPlaylist)
                         val tracks = tracksDbInteractor.getTracks(trackIds).first()
-                        adapter.updateTracks(tracks)
+                        updateAdapter(tracks)
                     }
                     binding.countTrackInPlaylist.text = getTracksCount(playlist.countTracks)
 
@@ -104,9 +108,24 @@ class FragmentPlaylist : Fragment() {
             }
         }
     }
+
+    private fun updateAdapter(tracks:  List<Track>){
+        if (tracks.isEmpty()){
+            binding.recyclerView.isVisible = false
+            binding.noTracks.isVisible = true
+        }else {
+            binding.recyclerView.isVisible = true
+            binding.noTracks.isVisible = false
+            adapter.updateTracks(tracks.reversed())}
+    }
+
+    private fun formatTrackTime(milliseconds: Long): String {
+        val totalSeconds = milliseconds / 1000
+        val minutes = totalSeconds / 60
+        val seconds = totalSeconds % 60
+        return String.format("%02d:%02d", minutes, seconds)
+    }
     private fun menu() {
-        val bottomSheet = binding.bottomSheetSettingPlaylist
-        val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         binding.textViewShare.setOnClickListener { share() }
         binding.editInformation.setOnClickListener {
@@ -153,8 +172,8 @@ class FragmentPlaylist : Fragment() {
             if (playlist.countTracks < 1) {
                 Toast.makeText(
                     requireContext(),
-                    getString(R.string.no_tracks_in_playlist_share), Toast.LENGTH_SHORT
-                ).show()
+                    getString(R.string.no_tracks_in_playlist_share), Toast.LENGTH_SHORT).show()
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
             } else {
                 val trackIds = tracksInPlaylistDbInteractor.getIdTrackInPlaylist(
                     playlistDbInteractor.getIdPlaylist(playlist.title)
@@ -163,7 +182,7 @@ class FragmentPlaylist : Fragment() {
                 val tracksCount = getTracksCount(playlist.countTracks)
                 var msg = "${playlist.title}\n${playlist.description}\n$tracksCount\n"
                 for ((index, value) in tracks.withIndex()) {
-                    msg += "${index + 1}.${value.artistName} - ${value.trackName}(${value.trackTimeMillis})\n"
+                    msg += "${index + 1}. ${value.artistName} - ${value.trackName} (${formatTrackTime(value.trackTimeMillis)}).\n"
                 }
                 val intent = Intent(Intent.ACTION_SEND).apply {
                     putExtra(Intent.EXTRA_TEXT, msg)
@@ -204,7 +223,7 @@ class FragmentPlaylist : Fragment() {
             )
 
             val tracks = tracksDbInteractor.getTracks(trackIds).first()
-            adapter.updateTracks(tracks)
+            updateAdapter(tracks)
         }
 
     }
@@ -245,7 +264,7 @@ class FragmentPlaylist : Fragment() {
                     val trackIds = tracksInPlaylistDbInteractor.getIdTrackInPlaylist(idPlaylist)
                     val tracks = tracksDbInteractor.getTracks(trackIds).first()
                     playlist = playlistDbInteractor.getPlaylistById(idPlaylist)
-                    adapter.updateTracks(tracks)
+                    updateAdapter(tracks)
                 }
             }
             .show()

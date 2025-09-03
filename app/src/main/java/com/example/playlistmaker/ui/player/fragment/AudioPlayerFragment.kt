@@ -120,9 +120,6 @@ class AudioPlayerFragment : Fragment() {
         }
 
         viewModel.showMessage.observe(viewLifecycleOwner) { message ->
-            if (::bottomSheetBehavior.isInitialized) {
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-            }
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             loadPlaylists()
         }
