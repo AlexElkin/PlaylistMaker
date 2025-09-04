@@ -12,9 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.data.search.Track
 import com.example.playlistmaker.databinding.FragmentTracksBinding
 import com.example.playlistmaker.domain.db.TracksDbInteractor
-import com.example.playlistmaker.ui.library.fragment.LibraryFragment
+import com.example.playlistmaker.ui.library.adapter.TrackAdapter
 import com.example.playlistmaker.ui.library.view_model.FragmentTracksViewModel
-import com.example.playlistmaker.ui.search.adapter.SearchAdapter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -27,15 +26,16 @@ class FragmentTracks : Fragment() {
     private val viewModel: FragmentTracksViewModel by viewModel()
 
     private val tracksDbInteractor: TracksDbInteractor by inject()
-    private val adapter = SearchAdapter(
-        emptyList(), onItemClickListener = { track -> viewModel.onTrackClicked(track) }
-    )
+    private lateinit var adapter: TrackAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentTracksBinding.inflate(inflater, container, false)
+        adapter = TrackAdapter(
+            emptyList(), onItemClickListener = viewModel
+        )
         setupRecyclerView()
         observeTracks()
         observeViewModel()
