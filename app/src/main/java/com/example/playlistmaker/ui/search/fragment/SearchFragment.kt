@@ -18,7 +18,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.data.TRACK
 import com.example.playlistmaker.data.search.Track
 import com.example.playlistmaker.databinding.SearchFragmentBinding
-import com.example.playlistmaker.ui.search.adapter.SearchAdapter
+import com.example.playlistmaker.ui.library.adapter.TrackAdapter
 import com.example.playlistmaker.ui.search.view_model.SearchState
 import com.example.playlistmaker.ui.search.view_model.SearchViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -28,12 +28,14 @@ class SearchFragment : Fragment(){
     private var _binding: SearchFragmentBinding? = null
     private val binding get() = _binding!!
     private val viewModel: SearchViewModel by viewModel()
-    private val adapter = SearchAdapter(
-        emptyList(), onItemClickListener = { track -> viewModel.onTrackClicked(track)}
-    )
+
+    private lateinit var adapter: TrackAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = SearchFragmentBinding.inflate(inflater, container, false)
+        adapter = TrackAdapter(
+            emptyList(), onItemClickListener = viewModel
+        )
         setupRecyclerView()
         setupSearchField()
         setupClickListeners()

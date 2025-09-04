@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.data.search.Track
 import com.example.playlistmaker.domain.search.SearchResult
 import com.example.playlistmaker.domain.search.api.SearchInteractor
+import com.example.playlistmaker.ui.library.adapter.TrackAdapter
 import com.example.playlistmaker.ui.utils.Debouncer
 import com.example.playlistmaker.ui.utils.SingleLiveEvent
 import kotlinx.coroutines.Job
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
 class SearchViewModel(
     private val searchInteractor: SearchInteractor,
     private val debouncer: Debouncer
-) : ViewModel() {
+) : ViewModel(), TrackAdapter.OnItemClickListener {
 
     private val _state = MutableLiveData<SearchState>()
     val state: LiveData<SearchState> = _state
@@ -104,16 +105,18 @@ class SearchViewModel(
         }
     }
 
-    fun onTrackClicked(track: Track) {
+    fun onPlayerNavigated() {
+        _navigateToPlayer.value = null
+    }
+
+    override fun onItemClick(track: Track) {
         viewModelScope.launch {
             searchInteractor.addToSearchHistory(track)
             _navigateToPlayer.value = track
         }
     }
 
-    fun onPlayerNavigated() {
-        _navigateToPlayer.value = null
-    }
+    override fun onItemLongClick(track: Track) {}
 }
 
 sealed class SearchState {
