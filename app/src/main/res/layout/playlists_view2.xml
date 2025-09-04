@@ -32,6 +32,7 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:text="@string/track_name"
+            android:textColor="@color/iconColorBlackWhite"
             style="@style/style_activity_search_textView_16sp">
 
         </TextView>
@@ -41,6 +42,7 @@
             android:layout_height="wrap_content"
             android:text="@string/executor"
             android:maxLines="1"
+            android:textColor="@color/iconColorGrayWhite"
             style="@style/style_activity_search_textView_12sp">
         </TextView>
 

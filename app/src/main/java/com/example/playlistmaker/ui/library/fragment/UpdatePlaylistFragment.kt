@@ -6,8 +6,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -21,56 +21,40 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.example.playlistmaker.R
+import com.example.playlistmaker.data.PLAYLIST
 import com.example.playlistmaker.data.library.Playlists
-import com.example.playlistmaker.databinding.NewPlaylistFragmentBinding
+import com.example.playlistmaker.databinding.UpdatePlaylistFragmentBinding
 import com.example.playlistmaker.domain.db.PlaylistDbInteractor
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import jp.wasabeef.glide.transformations.RoundedCornersTransformation
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.getValue
-import kotlin.io.encoding.Base64
 
-class NewPlaylistFragment : Fragment() {
-
-    private var photo = false
+class UpdatePlaylistFragment : Fragment() {
+    private val playlistDbInteractor: PlaylistDbInteractor by inject()
+    private var url: Uri? = null
     private var text = false
     private var title: String? = null
-    private var url: Uri? = null
-
-    private val playlistDbInteractor: PlaylistDbInteractor by inject()
-    private var _binding: NewPlaylistFragmentBinding? = null
+    private lateinit var playlist: Playlists
+    private var _binding: UpdatePlaylistFragmentBinding? = null
     private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = NewPlaylistFragmentBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        super.onCreate(savedInstanceState)
+        _binding = UpdatePlaylistFragmentBinding.inflate(inflater, container, false)
+        playlist = getPlaylist()
         setupClickListeners()
         setupTextWatcher()
+        setPlaylist()
+        return binding.root
     }
 
     private fun setupClickListeners() {
         binding.buttonBack.setOnClickListener {
-            if (text || photo) {
-                showExitDialog()
-            } else {
-                exit()
+            exit()
             }
-        }
+
 
         val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             if (uri != null) {
@@ -78,7 +62,6 @@ class NewPlaylistFragment : Fragment() {
                     .load(uri)
                     .into(binding.icon)
                 url = uri
-                photo = true
                 updateButtonState()
             }
         }
@@ -87,11 +70,37 @@ class NewPlaylistFragment : Fragment() {
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 
-        binding.buttonCreate.setOnClickListener {
+        binding.buttonCave.setOnClickListener {
             savePlaylistAndExit()
         }
     }
+    private fun exit() = findNavController().popBackStack()
 
+    private fun savePlaylistAndExit() {
+        val titleText = binding.editTextTitle.text.toString().trim()
+        val descriptionText = binding.editTextDescription.text.toString().trim()
+        val imagePath = if (url != null) {
+            url!!.saveImageToPrivateStorage(titleText)
+        } else {
+            playlist.picture
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            val playlistId = playlistDbInteractor.getIdPlaylist(playlist.title)
+            val currentCountTracks = playlistDbInteractor.getPlaylistById(playlistId).countTracks
+            playlistDbInteractor.updatePlaylistById(
+                rowId = playlistId,
+                playlistTitle = titleText,
+                picture = imagePath,
+                description = descriptionText
+            )
+            val resultBundle = bundleOf(
+                "playlist_object" to Playlists(title = titleText,description = descriptionText,picture = imagePath, countTracks = currentCountTracks)
+            )
+            parentFragmentManager.setFragmentResult("playlist_changed", resultBundle)
+            exit()
+        }
+
+    }
     private fun setupTextWatcher() {
         binding.editTextTitle.addTextChangedListener(createTextWatcher())
     }
@@ -112,65 +121,31 @@ class NewPlaylistFragment : Fragment() {
 
     private fun updateButtonState() {
         val isEnabled = text
-        binding.buttonCreate.isEnabled = isEnabled
-        binding.buttonCreate.isClickable = isEnabled
+        binding.buttonCave.isEnabled = isEnabled
+        binding.buttonCave.isClickable = isEnabled
 
         val color = if (isEnabled) Color.BLUE else Color.GRAY
-        binding.buttonCreate.backgroundTintList = ColorStateList.valueOf(color)
+        binding.buttonCave.backgroundTintList = ColorStateList.valueOf(color)
+    }
+    private fun setPlaylist() {
+        Glide.with(requireContext())
+            .load(playlist.picture)
+            .placeholder(R.drawable.placeholder)
+            .into(binding.icon)
+        binding.editTextTitle.setText(playlist.title)
+        binding.editTextDescription.setText(playlist.description)
     }
 
-    private fun exit() = findNavController().popBackStack()
-    private fun saveDefaultImageToPrivateStorage(title: String): String {
-        val context = requireContext()
-        try {
-            val storageDir = context.getDir("album_playlist", Context.MODE_PRIVATE)
-            val file = File(storageDir, "$title.jpg")
-
-            val bitmap = BitmapFactory.decodeResource(resources, R.drawable.placeholder)
-
-            FileOutputStream(file).use { outputStream ->
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
-            }
-            bitmap.recycle()
-
-            return file.absolutePath
-
-        } catch (e: Exception) {
-            Log.e("NewPlaylistFragment", "Error saving default image: ${e.message}")
-            return ""
-        }
-    }
-    private fun savePlaylistAndExit() {
-        val titleText = binding.editTextTitle.text.toString().trim()
-        val descriptionText = binding.editTextDescription.text.toString().trim()
-        val imagePath = if (url != null) {
-            url!!.saveImageToPrivateStorage(titleText)
+    private fun getPlaylist(): Playlists {
+        val args = arguments ?: throw IllegalStateException("Arguments not found")
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            args.getParcelable(PLAYLIST, Playlists::class.java)
         } else {
-            saveDefaultImageToPrivateStorage(titleText)
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            playlistDbInteractor.insertPlaylist(Playlists(
-                title = titleText,
-                picture = imagePath,
-                description = descriptionText
-            ))
-        }
-        requireActivity().supportFragmentManager.setFragmentResult(
-            "new_playlist_request",
-            bundleOf("playlist_title" to titleText)
-        )
-        exit()
+            @Suppress("DEPRECATION")
+            args.getParcelable(PLAYLIST)
+        } ?: throw IllegalStateException("Track not found")
     }
 
-    private fun showExitDialog() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.finish_creating_a_playlist))
-            .setMessage(getString(R.string.all_unsaved_data_will_be_lost))
-            .setNeutralButton(getString(R.string.cancellation)) { dialog, _ -> dialog.dismiss() }
-            .setNegativeButton(getString(R.string.complete)) { _, _ -> exit() }
-            .show()
-    }
-    //Переделать позже в data слой сохранение в файл
     private fun Uri.saveImageToPrivateStorage(title: String): String {
         val context = requireContext()
         try {

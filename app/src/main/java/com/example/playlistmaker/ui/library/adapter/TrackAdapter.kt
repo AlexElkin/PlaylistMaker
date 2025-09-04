@@ -1,4 +1,4 @@
-package com.example.playlistmaker.ui.search.adapter
+package com.example.playlistmaker.ui.library.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -14,13 +14,14 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.data.search.Track
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 
-class SearchAdapter(
+class TrackAdapter(
     private var tracks: List<Track>,
     private val onItemClickListener: OnItemClickListener
-) : RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<TrackAdapter.ViewHolder>() {
 
-    fun interface OnItemClickListener {
+    interface OnItemClickListener {
         fun onItemClick(track: Track)
+        fun onItemLongClick(track: Track)
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -80,6 +81,10 @@ class SearchAdapter(
         holder.bind(track)
         holder.itemView.setOnClickListener {
             onItemClickListener.onItemClick(track)
+        }
+        holder.itemView.setOnLongClickListener {
+            onItemClickListener.onItemLongClick(track)
+            true
         }
     }
 }

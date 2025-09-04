@@ -10,7 +10,15 @@ class TracksInPlaylistRepositoryImpl (private val tracksInPlaylistDao: TracksInP
         return tracksInPlaylistDao.getIdTrackInPlaylist(idPlaylist)
     }
 
+    override suspend fun deleteTrackEntity(idTrack: Int) {
+        tracksInPlaylistDao.deleteTrackEntity(idTrack)
+    }
+
     override suspend fun insertIdTrackInPlaylist(tracksInPlaylist: TracksInPlaylist) {
         tracksInPlaylistDao.insertIdTrackInPlaylist(tracksInPlaylistConvertor.mapToTracksInPlaylistEntity(tracksInPlaylist))
+    }
+
+    override suspend fun deletePlaylist(idPlaylist: Int) {
+        tracksInPlaylistDao.deletePlaylist(idPlaylist)
     }
 }

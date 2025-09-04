@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/search_fragment"
-        android:name="com.example.playlistmaker.ui.search.activity.SearchFragment"
+        android:name="com.example.playlistmaker.ui.search.fragment.SearchFragment"
         android:label="SearchFragment"
         tools:layout="@layout/search_fragment">
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/library_fragment"
-        android:name="com.example.playlistmaker.ui.library.activity.LibraryFragment"
+        android:name="com.example.playlistmaker.ui.library.fragment.LibraryFragment"
         android:label="LibraryFragment"
         tools:layout="@layout/library_fragment">
         <action
@@ -36,12 +36,12 @@
     </fragment>
     <fragment
         android:id="@+id/settings_fragment"
-        android:name="com.example.playlistmaker.ui.settings.activity.SettingsFragment"
+        android:name="com.example.playlistmaker.ui.settings.fragment.SettingsFragment"
         android:label="SettingsFragment"
         tools:layout="@layout/settings_fragment"/>
     <fragment
         android:id="@+id/audio_player_fragment"
-        android:name="com.example.playlistmaker.ui.player.activity.AudioPlayerFragment"
+        android:name="com.example.playlistmaker.ui.player.fragment.AudioPlayerFragment"
         android:label="audio_player_fragment"
         tools:layout="@layout/audio_player_fragment" >
         <action
@@ -90,5 +90,13 @@
         <action
             android:id="@+id/action_fragmentPlaylist_to_audio_player_fragment"
             app:destination="@id/audio_player_fragment" />
+        <action
+            android:id="@+id/action_fragmentPlaylist_to_updatePlaylistFragment"
+            app:destination="@id/updatePlaylistFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/updatePlaylistFragment"
+        android:name="com.example.playlistmaker.ui.library.fragment.UpdatePlaylistFragment"
+        android:label="update_playlist_fragment"
+        tools:layout="@layout/update_playlist_fragment" />
 </navigation>

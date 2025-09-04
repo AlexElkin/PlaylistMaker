@@ -34,8 +34,10 @@ class SearchViewModel(
             showHistory()
             return
         } else {
-            _state.value = SearchState.Loading
-            debouncer.debounce { performSearch(query) }
+
+            debouncer.debounce {
+                _state.value = SearchState.Loading
+                performSearch(query) }
         }
     }
 

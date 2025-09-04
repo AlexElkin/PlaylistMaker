@@ -10,8 +10,8 @@ class PlaylistDbInteractorImpl(private val playlistDbRepository: PlaylistDbRepos
         return playlistDbRepository.getPlaylists()
     }
 
-    override suspend fun deletePlaylistEntity(title: String) {
-        playlistDbRepository.deletePlaylistEntity(title)
+    override suspend fun deletePlaylistEntity(id: Int) {
+        playlistDbRepository.deletePlaylistEntity(id)
     }
 
     override suspend fun insertPlaylist(playlist: Playlists) {
@@ -22,11 +22,29 @@ class PlaylistDbInteractorImpl(private val playlistDbRepository: PlaylistDbRepos
         return playlistDbRepository.getCountTracks(title)
     }
 
-    override suspend fun setCountTracks(title: String, count: Int): Int {
-        return playlistDbRepository.setCountTracks(title,count)
+    override suspend fun setCountTracks(title: String, count: Int) {
+        playlistDbRepository.setCountTracks(title,count)
+    }
+
+    override suspend fun updatePlaylistById(
+        rowId: Int,
+        playlistTitle: String,
+        description: String,
+        picture: String
+    ) {
+        playlistDbRepository.updatePlaylistById(
+            rowId = rowId,
+            playlistTitle = playlistTitle,
+            description = description,
+            picture = picture
+        )
     }
 
     override suspend fun getIdPlaylist(title: String): Int {
         return playlistDbRepository.getIdPlaylist(title)
+    }
+
+    override suspend fun getPlaylistById(id: Int): Playlists{
+        return playlistDbRepository.getPlaylistById(id)
     }
 }

@@ -4,6 +4,7 @@ const val MY_SAVES = "my saves"
 const val THEME = "theme"
 const val TRACK = "track"
 const val PLAYLIST = "playlist"
+const val PLAYLIST_ID = "playlist_id"
 
 const val CORNER_RADIUS_DP_LOGO_500 = 8f
 const val SEARCH_DEBOUNCE_DELAY = 2000L

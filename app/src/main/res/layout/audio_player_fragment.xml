@@ -14,7 +14,7 @@
         android:background="@color/iconColorWhiteBlack"
         android:clipChildren="false"
         android:clipToPadding="false"
-        tools:context=".ui.player.activity.AudioPlayerFragment">
+        tools:context=".ui.player.fragment.AudioPlayerFragment">
 
 
         <androidx.constraintlayout.widget.Guideline

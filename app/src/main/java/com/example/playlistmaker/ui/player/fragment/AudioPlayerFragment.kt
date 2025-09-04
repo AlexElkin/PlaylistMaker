@@ -1,4 +1,4 @@
-package com.example.playlistmaker.ui.player.activity
+package com.example.playlistmaker.ui.player.fragment
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -20,10 +20,8 @@ import com.example.playlistmaker.data.CORNER_RADIUS_DP_LOGO_500
 import com.example.playlistmaker.data.TRACK
 import com.example.playlistmaker.data.search.Track
 import com.example.playlistmaker.databinding.AudioPlayerFragmentBinding
-import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.example.playlistmaker.domain.db.PlaylistDbInteractor
 import com.example.playlistmaker.domain.db.TracksDbInteractor
-import com.example.playlistmaker.domain.db.TracksInPlaylistDbInteractor
 import com.example.playlistmaker.ui.player.adapter.AudioPlayerAdapter
 import com.example.playlistmaker.ui.player.view_model.PlayerViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -122,9 +120,6 @@ class AudioPlayerFragment : Fragment() {
         }
 
         viewModel.showMessage.observe(viewLifecycleOwner) { message ->
-            if (::bottomSheetBehavior.isInitialized) {
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-            }
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             loadPlaylists()
         }
