@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="PlaybackButtonView">
-        <attr name="normalImage" format="reference" />
-        <attr name="pressedImage" format="reference" />
+        <attr name="playImage" format="reference" />
+        <attr name="pauseImage" format="reference" />
     </declare-styleable>
 </resources>

@@ -1,31 +1,34 @@
 package com.example.playlistmaker.ui.player
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.*
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.MotionEvent
-import androidx.annotation.AttrRes
-import androidx.annotation.DrawableRes
-import androidx.appcompat.widget.AppCompatImageView
+import android.view.View
 import androidx.core.content.ContextCompat
 import com.example.playlistmaker.R
 
 class PlaybackButtonView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    @AttrRes defStyleAttr: Int = 0
-) : AppCompatImageView(context, attrs, defStyleAttr) {
+    defStyleAttr: Int = 0
+) : View(context, attrs, defStyleAttr) {
 
-    private var normalImageRes: Int = 0
-    private var pressedImageRes: Int = 0
-    private var isPressedState = false
+    private var playImageRes: Int = 0
+    private var pauseImageRes: Int = 0
+    private var isPlaying = false
+
+    private var playBitmap: Bitmap? = null
+    private var pauseBitmap: Bitmap? = null
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private var drawRect = RectF()
+
+    private val defaultSizePx = 84.dpToPx(context)
 
     init {
-        // Читаем кастомные атрибуты
-        if (attrs == null) {
-            throw IllegalArgumentException("Attributes are required for PlaybackButtonView")
-        }
-
         val typedArray = context.theme.obtainStyledAttributes(
             attrs,
             R.styleable.PlaybackButtonView,
@@ -34,110 +37,120 @@ class PlaybackButtonView @JvmOverloads constructor(
         )
 
         try {
-            normalImageRes = typedArray.getResourceId(R.styleable.PlaybackButtonView_normalImage, 0)
-            pressedImageRes = typedArray.getResourceId(R.styleable.PlaybackButtonView_pressedImage, 0)
+            playImageRes = typedArray.getResourceId(R.styleable.PlaybackButtonView_playImage, 0)
+            pauseImageRes = typedArray.getResourceId(R.styleable.PlaybackButtonView_pauseImage, 0)
 
-            // Проверяем, что обе картинки заданы
-            if (normalImageRes == 0) {
-                throw IllegalArgumentException("normalImage attribute is required")
-            }
-            if (pressedImageRes == 0) {
-                throw IllegalArgumentException("pressedImage attribute is required")
-            }
-
-            // Устанавливаем начальное изображение
-            setImageResource(normalImageRes)
+            require(playImageRes != 0) {"playImage attribute is required"}
+            require(pauseImageRes != 0) {"pauseImage attribute is required"}
+            playBitmap = getBitmapFromVectorDrawable(playImageRes, defaultSizePx, defaultSizePx)
+            pauseBitmap = getBitmapFromVectorDrawable(pauseImageRes, defaultSizePx, defaultSizePx)
 
         } finally {
             typedArray.recycle()
         }
 
-        // Настраиваем обработчики
-        setupTouchListeners()
         isClickable = true
-        isFocusable = true
-
-        // Добавляем ripple-эффект
-        setupBackground()
     }
 
-    private fun setupTouchListeners() {
-        setOnTouchListener { _, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    setPressedState()
-                    true
-                }
-                MotionEvent.ACTION_UP -> {
-                    setNormalState()
-                    performClick()
-                    true
-                }
-                MotionEvent.ACTION_CANCEL -> {
-                    setNormalState()
-                    true
-                }
-                else -> false
+    private fun getBitmapFromVectorDrawable(drawableId: Int, width: Int, height: Int): Bitmap {
+        val drawable: Drawable = ContextCompat.getDrawable(context, drawableId) ?:
+        throw IllegalArgumentException("Drawable not found: $drawableId")
+
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, width, height)
+        drawable.draw(canvas)
+
+        return bitmap
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
+        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
+
+        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
+        val heightSize = MeasureSpec.getSize(heightMeasureSpec)
+
+        val width = when (widthMode) {
+            MeasureSpec.EXACTLY -> widthSize
+            MeasureSpec.AT_MOST -> minOf(defaultSizePx, widthSize)
+            else -> defaultSizePx
+        }
+
+        val height = when (heightMode) {
+            MeasureSpec.EXACTLY -> heightSize
+            MeasureSpec.AT_MOST -> minOf(defaultSizePx, heightSize)
+            else -> defaultSizePx
+        }
+
+        setMeasuredDimension(width, height)
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        drawRect.set(
+            paddingLeft.toFloat(),
+            paddingTop.toFloat(),
+            (w - paddingRight).toFloat(),
+            (h - paddingBottom).toFloat()
+        )
+    }
+
+    @SuppressLint("DrawAllocation")
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+
+        val currentBitmap = if (isPlaying) pauseBitmap else playBitmap
+        currentBitmap?.let { bitmap ->
+            val srcRect = Rect(0, 0, bitmap.width, bitmap.height)
+            canvas.drawBitmap(bitmap, srcRect, drawRect, paint)
+        }
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                return true
+            }
+            MotionEvent.ACTION_UP -> {
+                toggleState()
+                performClick()
+                return true
             }
         }
-    }
-
-    private fun setupBackground() {
-        val outValue = TypedValue()
-        context.theme.resolveAttribute(android.R.attr.selectableItemBackground, outValue, true)
-        background = ContextCompat.getDrawable(context, outValue.resourceId)
-    }
-
-    private fun setNormalState() {
-        setImageResource(normalImageRes)
-        isPressedState = false
-    }
-
-    private fun setPressedState() {
-        setImageResource(pressedImageRes)
-        isPressedState = true
-    }
-
-    // Публичные методы для управления из кода
-    fun setNormalImage(@DrawableRes resId: Int) {
-        normalImageRes = resId
-        if (!isPressedState) {
-            setImageResource(normalImageRes)
-        }
-    }
-
-    fun setPressedImage(@DrawableRes resId: Int) {
-        pressedImageRes = resId
-        if (isPressedState) {
-            setImageResource(pressedImageRes)
-        }
-    }
-
-    fun setImages(@DrawableRes normalResId: Int, @DrawableRes pressedResId: Int) {
-        setNormalImage(normalResId)
-        setPressedImage(pressedResId)
-    }
-
-    fun setState(pressed: Boolean) {
-        if (pressed) {
-            setPressedState()
-        } else {
-            setNormalState()
-        }
+        return super.onTouchEvent(event)
     }
 
     fun toggleState() {
-        if (isPressedState) {
-            setNormalState()
-        } else {
-            setPressedState()
+        isPlaying = !isPlaying
+        invalidate()
+    }
+
+    fun setPlaying(playing: Boolean) {
+        if (isPlaying != playing) {
+            isPlaying = playing
+            invalidate()
         }
     }
 
-    fun isPressedState(): Boolean = isPressedState
+    fun isPlaying(): Boolean = isPlaying
 
     override fun performClick(): Boolean {
         super.performClick()
         return true
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        playBitmap?.recycle()
+        pauseBitmap?.recycle()
+    }
+
+    private fun Int.dpToPx(context: Context): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            this.toFloat(),
+            context.resources.displayMetrics
+        ).toInt()
     }
 }

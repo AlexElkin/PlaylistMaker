@@ -111,16 +111,8 @@ class AudioPlayerFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.playbackState.observe(viewLifecycleOwner) { state ->
-            val shouldBePressed = when (state) {
-                PlayerViewModel.PlaybackState.PLAYING -> true
-                PlayerViewModel.PlaybackState.PREPARED -> false
-                PlayerViewModel.PlaybackState.PAUSED -> false
-                PlayerViewModel.PlaybackState.COMPLETED -> false
-                PlayerViewModel.PlaybackState.IDLE -> false
-            }
-            if (binding.playTrack.isPressedState() != shouldBePressed) {
-                binding.playTrack.setState(shouldBePressed)
-            }
+            val isPlaying = state == PlayerViewModel.PlaybackState.PLAYING
+            binding.playTrack.setPlaying(isPlaying)
         }
 
 
