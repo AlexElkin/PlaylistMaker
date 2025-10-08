@@ -1,9 +1,7 @@
 package com.example.playlistmaker.ui.player
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.*
-import android.graphics.drawable.Drawable
+import android.graphics.Canvas
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.MotionEvent
@@ -20,13 +18,8 @@ class PlaybackButtonView @JvmOverloads constructor(
     private var playImageRes: Int = 0
     private var pauseImageRes: Int = 0
     private var isPlaying = false
-
-    private var playBitmap: Bitmap? = null
-    private var pauseBitmap: Bitmap? = null
-    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private var drawRect = RectF()
-
-    private val srcRect = Rect()
+    private var playDrawable: android.graphics.drawable.Drawable? = null
+    private var pauseDrawable: android.graphics.drawable.Drawable? = null
 
     private val defaultSizePx = 84.dpToPx(context)
 
@@ -44,28 +37,15 @@ class PlaybackButtonView @JvmOverloads constructor(
 
             require(playImageRes != 0) {"playImage attribute is required"}
             require(pauseImageRes != 0) {"pauseImage attribute is required"}
-            playBitmap = getBitmapFromVectorDrawable(playImageRes, defaultSizePx, defaultSizePx)
-            pauseBitmap = getBitmapFromVectorDrawable(pauseImageRes, defaultSizePx, defaultSizePx)
-            playBitmap?.let { bitmap ->
-                srcRect.set(0, 0, bitmap.width, bitmap.height)
-            }
+
+            playDrawable = ContextCompat.getDrawable(context, playImageRes)
+            pauseDrawable = ContextCompat.getDrawable(context, pauseImageRes)
+
         } finally {
             typedArray.recycle()
         }
 
         isClickable = true
-    }
-
-    private fun getBitmapFromVectorDrawable(drawableId: Int, width: Int, height: Int): Bitmap {
-        val drawable: Drawable = ContextCompat.getDrawable(context, drawableId) ?:
-        throw IllegalArgumentException("Drawable not found: $drawableId")
-
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        drawable.setBounds(0, 0, width, height)
-        drawable.draw(canvas)
-
-        return bitmap
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -92,20 +72,19 @@ class PlaybackButtonView @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        drawRect.set(
-            paddingLeft.toFloat(),
-            paddingTop.toFloat(),
-            (w - paddingRight).toFloat(),
-            (h - paddingBottom).toFloat()
-        )
+        val left = paddingLeft
+        val top = paddingTop
+        val right = w - paddingRight
+        val bottom = h - paddingBottom
+
+        playDrawable?.setBounds(left, top, right, bottom)
+        pauseDrawable?.setBounds(left, top, right, bottom)
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        val currentBitmap = if (isPlaying) pauseBitmap else playBitmap
-        currentBitmap?.let { bitmap ->
-            canvas.drawBitmap(bitmap, srcRect, drawRect, paint)
-        }
+        val currentDrawable = if (isPlaying) pauseDrawable else playDrawable
+        currentDrawable?.draw(canvas)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -139,12 +118,6 @@ class PlaybackButtonView @JvmOverloads constructor(
     override fun performClick(): Boolean {
         super.performClick()
         return true
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        playBitmap?.recycle()
-        pauseBitmap?.recycle()
     }
 
     private fun Int.dpToPx(context: Context): Int {
