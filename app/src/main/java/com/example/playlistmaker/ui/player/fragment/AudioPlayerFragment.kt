@@ -111,13 +111,18 @@ class AudioPlayerFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.playbackState.observe(viewLifecycleOwner) { state ->
-            binding.playTrack.setImageResource(
-                when (state) {
-                    PlayerViewModel.PlaybackState.PLAYING -> R.drawable.track_pause
-                    else -> R.drawable.track_play
-                }
-            )
+            val shouldBePressed = when (state) {
+                PlayerViewModel.PlaybackState.PLAYING -> true
+                PlayerViewModel.PlaybackState.PREPARED -> false
+                PlayerViewModel.PlaybackState.PAUSED -> false
+                PlayerViewModel.PlaybackState.COMPLETED -> false
+                PlayerViewModel.PlaybackState.IDLE -> false
+            }
+            if (binding.playTrack.isPressedState() != shouldBePressed) {
+                binding.playTrack.setState(shouldBePressed)
+            }
         }
+
 
         viewModel.showMessage.observe(viewLifecycleOwner) { message ->
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
