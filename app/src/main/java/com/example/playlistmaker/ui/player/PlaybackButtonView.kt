@@ -26,6 +26,8 @@ class PlaybackButtonView @JvmOverloads constructor(
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var drawRect = RectF()
 
+    private val srcRect = Rect()
+
     private val defaultSizePx = 84.dpToPx(context)
 
     init {
@@ -44,7 +46,9 @@ class PlaybackButtonView @JvmOverloads constructor(
             require(pauseImageRes != 0) {"pauseImage attribute is required"}
             playBitmap = getBitmapFromVectorDrawable(playImageRes, defaultSizePx, defaultSizePx)
             pauseBitmap = getBitmapFromVectorDrawable(pauseImageRes, defaultSizePx, defaultSizePx)
-
+            playBitmap?.let { bitmap ->
+                srcRect.set(0, 0, bitmap.width, bitmap.height)
+            }
         } finally {
             typedArray.recycle()
         }
@@ -96,13 +100,10 @@ class PlaybackButtonView @JvmOverloads constructor(
         )
     }
 
-    @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-
         val currentBitmap = if (isPlaying) pauseBitmap else playBitmap
         currentBitmap?.let { bitmap ->
-            val srcRect = Rect(0, 0, bitmap.width, bitmap.height)
             canvas.drawBitmap(bitmap, srcRect, drawRect, paint)
         }
     }
