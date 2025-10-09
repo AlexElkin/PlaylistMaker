@@ -84,8 +84,11 @@ class PlayerViewModel(
                 stopTimeUpdater()
             }
 
-            PlaybackState.PREPARED, PlaybackState.PAUSED -> {
-                playerUseCase.seekTo(currentPosition.value ?: 0)
+            PlaybackState.PREPARED, PlaybackState.PAUSED, PlaybackState.COMPLETED -> {
+                if (playbackState.value == PlaybackState.COMPLETED) {
+                    _currentPosition.value = 0
+                    playerUseCase.seekTo(0)
+                }
                 playerUseCase.play()
                 _playbackState.value = PlaybackState.PLAYING
                 startTimeUpdater()

@@ -111,13 +111,10 @@ class AudioPlayerFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.playbackState.observe(viewLifecycleOwner) { state ->
-            binding.playTrack.setImageResource(
-                when (state) {
-                    PlayerViewModel.PlaybackState.PLAYING -> R.drawable.track_pause
-                    else -> R.drawable.track_play
-                }
-            )
+            val isPlaying = state == PlayerViewModel.PlaybackState.PLAYING
+            binding.playTrack.setPlaying(isPlaying)
         }
+
 
         viewModel.showMessage.observe(viewLifecycleOwner) { message ->
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()

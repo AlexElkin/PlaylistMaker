@@ -109,18 +109,21 @@
             app:layout_constraintStart_toEndOf="@id/guideline_vertical_start"
             app:layout_constraintTop_toBottomOf="@id/artistName"/>
 
-        <ImageButton
+        <com.example.playlistmaker.ui.player.PlaybackButtonView
             android:id="@+id/play_track"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:contentDescription="@string/logo"
-            android:src="@drawable/track_play"
-            android:tag="@drawable/track_play"
+            app:playImage="@drawable/track_play"
+            app:pauseImage="@drawable/track_pause"
             app:layout_constraintBottom_toBottomOf="@id/add_track"
             app:layout_constraintEnd_toStartOf="@id/like_track"
             app:layout_constraintStart_toEndOf="@id/add_track"
-            app:layout_constraintTop_toTopOf="@id/add_track"/>
+            app:layout_constraintTop_toTopOf="@id/add_track"
+            >
+
+        </com.example.playlistmaker.ui.player.PlaybackButtonView>
 
         <ImageButton
             android:id="@+id/like_track"
