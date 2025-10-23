@@ -56,10 +56,12 @@ class AudioPlayerFragment : Fragment() {
         setupTrackInfo(getTrack())
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loadPlaylists()
     }
+
     private fun setupResultListener() {
         requireActivity().supportFragmentManager.setFragmentResultListener("new_playlist_request", this) { requestKey, bundle ->
             if (requestKey == "new_playlist_request") {
@@ -71,12 +73,15 @@ class AudioPlayerFragment : Fragment() {
             }
         }
     }
+
     private fun createBottomSheet(){
         val bottomSheetContainer = binding.standardBottomSheet
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        binding.addTrack.setOnClickListener {bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            binding.backgroundBlack50.isVisible = true}
+        binding.addTrack.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            binding.backgroundBlack50.isVisible = true
+        }
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_HIDDEN) {
@@ -93,6 +98,7 @@ class AudioPlayerFragment : Fragment() {
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
+
     private fun getTrack(): Track {
         val args = arguments ?: throw IllegalStateException("Arguments not found")
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -104,25 +110,12 @@ class AudioPlayerFragment : Fragment() {
     }
 
     private fun initViews() {
-        binding.buttonBack.setOnClickListener { parentFragmentManager.popBackStack()  }
+        binding.buttonBack.setOnClickListener {
+            viewModel.stopService()
+            parentFragmentManager.popBackStack()
+        }
         binding.playTrack.setOnClickListener { viewModel.playbackControl() }
         binding.likeTrack.setOnClickListener { controlFavoritesTracks(getTrack()) }
-    }
-
-    private fun observeViewModel() {
-        viewModel.playbackState.observe(viewLifecycleOwner) { state ->
-            val isPlaying = state == PlayerViewModel.PlaybackState.PLAYING
-            binding.playTrack.setPlaying(isPlaying)
-        }
-
-
-        viewModel.showMessage.observe(viewLifecycleOwner) { message ->
-            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-            loadPlaylists()
-        }
-        viewModel.currentPosition.observe(viewLifecycleOwner) { position ->
-            binding.trackPlaybackTime.text = formatTrackTime(position.toLong())
-        }
     }
 
     private fun setupTrackInfo(track: Track) {
@@ -161,7 +154,6 @@ class AudioPlayerFragment : Fragment() {
             tracksDbInteractor.updateStatusTrack(track)
             controlImageFavoritesTracks(track)
         }
-
     }
 
     fun controlImageFavoritesTracks(track: Track) {
@@ -170,16 +162,13 @@ class AudioPlayerFragment : Fragment() {
                 1 -> binding.likeTrack.setImageResource(R.drawable.like_activated)
                 0 -> binding.likeTrack.setImageResource(R.drawable.like_track)
             }
-
         }
-
     }
 
     private fun loadPlaylists() {
         viewLifecycleOwner.lifecycleScope.launch {
             val playlists = playlistDbInteractor.getPlaylists()
             adapter.updatePlaylists(playlists)
-
         }
     }
 
@@ -191,8 +180,41 @@ class AudioPlayerFragment : Fragment() {
         ).toInt()
     }
 
+    override fun onPause() {
+        super.onPause()
+        if (viewModel.playbackState.value == PlayerViewModel.PlaybackState.PLAYING) {
+            viewModel.showNotification()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.stopForegroundService()
+        viewModel.playbackState.observe(viewLifecycleOwner) { state ->
+            val isPlaying = state == PlayerViewModel.PlaybackState.PLAYING
+            binding.playTrack.setPlaying(isPlaying)
+        }
+    }
+
+    private fun observeViewModel() {
+        viewModel.playbackState.observe(viewLifecycleOwner) { state ->
+            val isPlaying = state == PlayerViewModel.PlaybackState.PLAYING
+            binding.playTrack.setPlaying(isPlaying)
+        }
+
+        viewModel.showMessage.observe(viewLifecycleOwner) { message ->
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+            loadPlaylists()
+        }
+        viewModel.currentPosition.observe(viewLifecycleOwner) { position ->
+            binding.trackPlaybackTime.text = formatTrackTime(position.toLong())
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
+        viewModel.stopService()
         _binding = null
     }
+
 }
