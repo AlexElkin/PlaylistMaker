@@ -37,10 +37,10 @@ import com.example.playlistmaker.domain.player.api.DispatcherProvider
 import com.example.playlistmaker.domain.player.api.PlayerRepository
 import com.example.playlistmaker.domain.player.impl.DispatcherProviderImpl
 import com.example.playlistmaker.domain.player.impl.PlayerRepositoryImpl
-import com.example.playlistmaker.domain.player.impl.PlayerUseCase
 import com.example.playlistmaker.domain.search.api.SearchInteractor
 import com.example.playlistmaker.domain.search.impl.SearchInteractorImpl
 import com.example.playlistmaker.domain.settings.SettingRepository
+import com.example.playlistmaker.domain.service.MusicService
 import com.example.playlistmaker.ui.library.view_model.FragmentPlaylistViewModel
 import com.example.playlistmaker.ui.library.view_model.FragmentPlaylistsViewModel
 import com.example.playlistmaker.ui.library.view_model.FragmentTracksViewModel
@@ -52,6 +52,7 @@ import com.example.playlistmaker.ui.settings.viewmodel.SettingsViewModel
 import com.example.playlistmaker.ui.utils.Debouncer
 import kotlinx.coroutines.MainScope
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -98,8 +99,20 @@ val repositoryModule = module {
 
     factory { TrackDbConvertor() }
     factory<SettingRepository>{ SettingRepositoryImpl(get()) }
+
+    // MediaPlayer для обычного воспроизведения
+    factory {
+        MediaPlayer().apply {
+            setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .build()
+            )
+        }
+    }
+
     factory<PlayerRepository> { PlayerRepositoryImpl(get()) }
-    factory { PlayerUseCase(get()) }
     factory<SearchHistoryRepository> { SearchHistoryRepositoryImpl(get()) }
     factory<TrackRepository> { TrackRepositoryImpl(get()) }
     factory<SearchInteractor> { SearchInteractorImpl(get(),get(),get()) }
@@ -119,24 +132,16 @@ val uiModule = module {
     viewModelOf(::FragmentPlaylistsViewModel)
     viewModelOf(::FragmentTracksViewModel)
     viewModelOf(::FragmentPlaylistViewModel)
-    factory { MediaPlayer().apply {
-        setAudioAttributes(
-            AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .setUsage(AudioAttributes.USAGE_MEDIA)
-                .build()
-        )
-    } }
-    factory { (track: Track) ->
+
+    viewModel { (track: Track) ->
         PlayerViewModel(
-            get(), get(), get(),
+            playlistDbInteractor = get(),
+            tracksDbInteractor = get(),
             tracksInPlaylistDbInteractor = get(),
             track = track
         )
     }
-
 }
-
 
 val dispatcherProvider = module {
     factory<DispatcherProvider> {

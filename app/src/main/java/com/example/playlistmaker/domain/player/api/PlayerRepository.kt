@@ -7,4 +7,6 @@ interface PlayerRepository {
     fun seekTo(position: Int)
     fun getCurrentPosition(): Int
     fun release()
+
+    fun isPlaying(): Boolean
 }

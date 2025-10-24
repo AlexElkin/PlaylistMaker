@@ -36,8 +36,6 @@ class AudioPlayerAdapter (
 
 
         fun bind(playlists: Playlists) {
-            // Установка текста
-
             playlistName.text = playlists.title
             tracksCount.text = when {
                 playlists.countTracks % 10 == 1 && playlists.countTracks % 100 != 11 ->

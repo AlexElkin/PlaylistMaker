@@ -1,8 +1,8 @@
 package com.example.playlistmaker.ui.player.view_model
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.data.REQUESTING_PLAYBACK_TIME
 import com.example.playlistmaker.data.db.TracksInPlaylist
@@ -11,34 +11,114 @@ import com.example.playlistmaker.data.search.Track
 import com.example.playlistmaker.domain.db.PlaylistDbInteractor
 import com.example.playlistmaker.domain.db.TracksDbInteractor
 import com.example.playlistmaker.domain.db.TracksInPlaylistDbInteractor
-import com.example.playlistmaker.domain.player.impl.PlayerUseCase
+import com.example.playlistmaker.domain.service.MusicService
 import com.example.playlistmaker.ui.utils.SingleLiveEvent
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
-    private val playerUseCase: PlayerUseCase,
     private val playlistDbInteractor: PlaylistDbInteractor,
     private val tracksDbInteractor: TracksDbInteractor,
     private val tracksInPlaylistDbInteractor: TracksInPlaylistDbInteractor,
-    track: Track
+    private val track: Track
 ) : ViewModel() {
-    private val _playbackState = MutableLiveData<PlaybackState>()
-    val playbackState: LiveData<PlaybackState> = _playbackState
+
+    private val _playbackState = MutableLiveData<MusicService.PlaybackState>()
+    val playbackState: LiveData<MusicService.PlaybackState> = _playbackState
 
     private val _currentPosition = MutableLiveData<Int>()
     val currentPosition: LiveData<Int> = _currentPosition
 
-    private var updateJob: Job? = null
-    private val track = track
-
     private val _showMessage = SingleLiveEvent<String>()
     val showMessage: LiveData<String> = _showMessage
 
-    init {
-        _playbackState.value = PlaybackState.IDLE
-        preparePlayer(track.previewUrl)
+    private var musicServiceController: MusicService.MusicServiceController? = null
+    private var timeUpdateJob: Job? = null
+
+    fun setMusicServiceController(controller: MusicService.MusicServiceController) {
+        this.musicServiceController = controller
+        observePlaybackState()
+        forceUpdateState()
+    }
+
+    private fun observePlaybackState() {
+        viewModelScope.launch {
+            musicServiceController?.getPlaybackState()?.collect { state ->
+                _playbackState.postValue(state)
+                val position = musicServiceController?.getCurrentPosition() ?: 0
+                _currentPosition.postValue(position)
+
+                when (state) {
+                    MusicService.PlaybackState.PLAYING -> startTimeUpdater()
+                    MusicService.PlaybackState.PAUSED,
+                    MusicService.PlaybackState.STOPPED,
+                    MusicService.PlaybackState.COMPLETED,
+                    MusicService.PlaybackState.IDLE -> stopTimeUpdater()
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun startTimeUpdater() {
+        stopTimeUpdater()
+        timeUpdateJob = viewModelScope.launch {
+            while (musicServiceController?.isPlaying() == true) {
+                val position = musicServiceController?.getCurrentPosition() ?: 0
+                _currentPosition.postValue(position)
+                delay(REQUESTING_PLAYBACK_TIME)
+
+                if (position == 0 && musicServiceController?.isPlaying() != true) {
+                    break
+                }
+            }
+        }
+    }
+
+    private fun stopTimeUpdater() {
+        timeUpdateJob?.cancel()
+        timeUpdateJob = null
+    }
+
+    private fun forceUpdateState() {
+        viewModelScope.launch {
+            val currentState = musicServiceController?.getPlaybackState()?.value
+            val currentPos = musicServiceController?.getCurrentPosition() ?: 0
+
+            currentState?.let { state ->
+                _playbackState.postValue(state)
+                _currentPosition.postValue(currentPos)
+
+                if (state == MusicService.PlaybackState.PLAYING) {
+                    startTimeUpdater()
+                }
+            }
+        }
+    }
+
+    fun playbackControl() {
+        when (musicServiceController?.isPlaying()) {
+            true -> {
+                musicServiceController?.pause()
+            }
+            false, null -> {
+                musicServiceController?.play(track)
+            }
+        }
+    }
+
+    fun showNotification() {
+        musicServiceController?.showNotification()
+    }
+
+    fun removeNotification() {
+        musicServiceController?.removeNotification()
+    }
+
+    fun updateCurrentPosition() {
+        _currentPosition.value = musicServiceController?.getCurrentPosition() ?: 0
     }
 
     fun onPlaylistClicked(playlist: Playlists) {
@@ -51,7 +131,7 @@ class PlayerViewModel(
                     idPlaylist = idPlaylist
                 )
             ) {
-                playlistDbInteractor.setCountTracks(playlist.title,playlist.countTracks+1)
+                playlistDbInteractor.setCountTracks(playlist.title, playlist.countTracks + 1)
                 tracksInPlaylistDbInteractor.insertTracksInPlaylist(
                     TracksInPlaylist(
                         idTrack = tracksDbInteractor.getIdTrack(track.previewUrl),
@@ -63,64 +143,9 @@ class PlayerViewModel(
         }
     }
 
-    private fun preparePlayer(url: String) {
-        playerUseCase.preparePlayer(
-            url,
-            onPrepared = { _playbackState.postValue(PlaybackState.PREPARED) },
-            onCompletion = {
-                _playbackState.postValue(PlaybackState.COMPLETED)
-                _currentPosition.postValue(0)
-                stopTimeUpdater()
-            }
-        )
-    }
-
-    fun playbackControl() {
-        when (playbackState.value) {
-            PlaybackState.PLAYING -> {
-                playerUseCase.pause()
-                _playbackState.value = PlaybackState.PAUSED
-                _currentPosition.value = playerUseCase.getCurrentPosition()
-                stopTimeUpdater()
-            }
-
-            PlaybackState.PREPARED, PlaybackState.PAUSED, PlaybackState.COMPLETED -> {
-                if (playbackState.value == PlaybackState.COMPLETED) {
-                    _currentPosition.value = 0
-                    playerUseCase.seekTo(0)
-                }
-                playerUseCase.play()
-                _playbackState.value = PlaybackState.PLAYING
-                startTimeUpdater()
-            }
-
-            else -> {}
-        }
-    }
-
-    private fun startTimeUpdater() {
-        stopTimeUpdater()
-        updateJob?.cancel()
-        updateJob = viewModelScope.launch {
-            while (playbackState.value == PlaybackState.PLAYING) {
-                _currentPosition.postValue(playerUseCase.getCurrentPosition())
-                delay(REQUESTING_PLAYBACK_TIME)
-            }
-        }
-    }
-
-    private fun stopTimeUpdater() {
-        updateJob?.cancel()
-        updateJob = null
-    }
-
     override fun onCleared() {
         super.onCleared()
-        playerUseCase.release()
         stopTimeUpdater()
-    }
-
-    enum class PlaybackState {
-        IDLE, PREPARED, PLAYING, PAUSED, COMPLETED
+        musicServiceController = null
     }
 }
