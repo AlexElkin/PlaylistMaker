@@ -124,11 +124,6 @@ val repositoryModule = module {
     }
 }
 
-// Добавляем модуль для сервиса
-val serviceModule = module {
-    single { MusicService() }
-}
-
 val uiModule = module {
     viewModelOf(::SettingsViewModel)
     viewModelOf(::MainViewModel)
@@ -143,7 +138,6 @@ val uiModule = module {
             playlistDbInteractor = get(),
             tracksDbInteractor = get(),
             tracksInPlaylistDbInteractor = get(),
-            context = androidContext(),
             track = track
         )
     }
