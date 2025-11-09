@@ -83,4 +83,6 @@ dependencies {
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
     ksp(libs.compiler)
+    implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.pager.indicators)
 }

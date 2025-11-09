@@ -307,7 +307,8 @@ private fun TrackListState(
         items(tracks) { track ->
             TrackItem(
                 track = track,
-                onTrackClick = onTrackClick
+                onItemClick = onTrackClick,
+                onItemLongClick = {}
             )
             androidx.compose.material3.Divider(
                 color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
@@ -342,8 +343,8 @@ private fun HistoryState(
             items(tracks) { track ->
                 TrackItem(
                     track = track,
-                    onTrackClick = onTrackClick,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                    onItemClick = onTrackClick,
+                    onItemLongClick = {}
                 )
                 androidx.compose.material3.Divider(
                     color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),

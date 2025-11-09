@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -18,33 +20,42 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LibraryFragment : Fragment() {
 
+    private val viewModel: LibraryViewModel by viewModel()
+    private var tabMediator: TabLayoutMediator? = null
+
+
     private var _binding: LibraryFragmentBinding? = null
     private val binding get() = _binding!!
-    private var tabMediator: TabLayoutMediator? = null // Сделайте nullable
-    private val viewModel: LibraryViewModel by viewModel()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = LibraryFragmentBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        binding.viewPager.adapter = FragmentViewPagerAdapter(childFragmentManager, lifecycle)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().supportFragmentManager.setFragmentResultListener("navigate_to_new_playlist", this) { requestKey, bundle ->
-            if (requestKey == "navigate_to_new_playlist") {
-                findNavController().navigate(R.id.newPlaylistFragment)
-            }
-        }
 
-        // Инициализация TabMediator
+        val viewPagerAdapter = FragmentViewPagerAdapter(childFragmentManager, lifecycle)
+        binding.viewPager.adapter = viewPagerAdapter
+
+
         tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             when (position) {
                 0 -> tab.text = getString(R.string.favorite_tracks)
                 1 -> tab.text = getString(R.string.playlists)
             }
         }
-        tabMediator?.attach() // Безопасный вызов
+        tabMediator?.attach()
 
-        return binding.root
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            "navigate_to_new_playlist",
+            this
+        ) { requestKey, bundle ->
+            if (requestKey == "navigate_to_new_playlist") {
+                findNavController().navigate(R.id.newPlaylistFragment)
+            }
+        }
     }
 
     fun navigateToPlayer(track: Track) {
@@ -56,12 +67,12 @@ class LibraryFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        tabMediator?.detach() // Отсоединяем здесь, а не в onDestroy()
+        tabMediator?.detach()
         tabMediator = null
         _binding = null
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    companion object {
+        fun newInstance() = LibraryFragment()
     }
 }

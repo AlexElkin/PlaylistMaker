@@ -1,6 +1,7 @@
 package com.example.playlistmaker.ui.search.jc
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -28,17 +29,21 @@ import coil.compose.AsyncImage
 import com.example.playlistmaker.R
 import com.example.playlistmaker.data.search.Track
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TrackItem(
     track: Track,
-    onTrackClick: (Track) -> Unit,
-    modifier: Modifier = Modifier
+    onItemClick: (Track) -> Unit,
+    onItemLongClick: (Track) -> Unit = {}
 ) {
     Row(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .height(72.dp)
-            .clickable { onTrackClick(track) }
+            .combinedClickable(
+                onClick = { onItemClick(track) },
+                onLongClick = { onItemLongClick(track) }
+            )
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -108,7 +113,7 @@ fun TrackItem(
             }
         }
         IconButton(
-            onClick = { onTrackClick(track) },
+            onClick = { onItemClick(track) },
             modifier = Modifier.size(48.dp)
         ) {
             Icon(
@@ -120,10 +125,13 @@ fun TrackItem(
         }
     }
 }
+
 fun truncatedText(text: String, maxLength: Int = 25): String {
     return if (text.length > maxLength) {
         text.substring(0, maxLength) + "..."
-    } else text}
+    } else text
+}
+
 private fun formatTrackTime(milliseconds: Long): String {
     val totalSeconds = milliseconds / 1000
     val minutes = totalSeconds / 60
