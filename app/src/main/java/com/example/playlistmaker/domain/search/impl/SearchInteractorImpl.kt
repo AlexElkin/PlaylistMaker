@@ -2,6 +2,11 @@ package com.example.playlistmaker.domain.search.impl
 
 
 
+import android.Manifest
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import androidx.annotation.RequiresPermission
 import com.example.playlistmaker.data.search.impl.NoInternetException
 import com.example.playlistmaker.data.search.Track
 import com.example.playlistmaker.domain.player.api.DispatcherProvider
@@ -12,6 +17,7 @@ import com.example.playlistmaker.domain.search.api.SearchInteractor
 import kotlinx.coroutines.withContext
 
 class SearchInteractorImpl(
+    private val context: Context,
     private val searchRepository: TrackRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
     private val dispatcherProvider: DispatcherProvider
@@ -31,6 +37,21 @@ class SearchInteractorImpl(
                     }
                 )
             }
+        }
+    }
+
+    override fun isOnline(): Boolean {
+        return try {
+            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val network = connectivityManager.activeNetwork
+            val capabilities = connectivityManager.getNetworkCapabilities(network)
+            capabilities != null &&
+                    (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
     }
 

@@ -101,7 +101,6 @@ val repositoryModule = module {
     factory { TrackDbConvertor() }
     factory<SettingRepository> { SettingRepositoryImpl(get()) }
 
-    // MediaPlayer для обычного воспроизведения
     factory {
         MediaPlayer().apply {
             setAudioAttributes(
@@ -116,7 +115,7 @@ val repositoryModule = module {
     factory<PlayerRepository> { PlayerRepositoryImpl(get()) }
     factory<SearchHistoryRepository> { SearchHistoryRepositoryImpl(get()) }
     factory<TrackRepository> { TrackRepositoryImpl(get()) }
-    factory<SearchInteractor> { SearchInteractorImpl(get(), get(), get()) }
+    factory<SearchInteractor> { SearchInteractorImpl(get(), get(), get(),get()) }
     single<TracksDbRepository> {
         TracksDbRepositoryImpl(get(), get())
     }
