@@ -20,27 +20,33 @@ class LibraryFragment : Fragment() {
 
     private var _binding: LibraryFragmentBinding? = null
     private val binding get() = _binding!!
-    private lateinit var tabMediator: TabLayoutMediator
+    private var tabMediator: TabLayoutMediator? = null // Сделайте nullable
     private val viewModel: LibraryViewModel by viewModel()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
         _binding = LibraryFragmentBinding.inflate(inflater, container, false)
+
         binding.viewPager.adapter = FragmentViewPagerAdapter(childFragmentManager, lifecycle)
+
         requireActivity().supportFragmentManager.setFragmentResultListener("navigate_to_new_playlist", this) { requestKey, bundle ->
             if (requestKey == "navigate_to_new_playlist") {
                 findNavController().navigate(R.id.newPlaylistFragment)
             }
         }
+
+        // Инициализация TabMediator
         tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             when (position) {
                 0 -> tab.text = getString(R.string.favorite_tracks)
                 1 -> tab.text = getString(R.string.playlists)
             }
         }
-        tabMediator.attach()
+        tabMediator?.attach() // Безопасный вызов
+
         return binding.root
     }
+
     fun navigateToPlayer(track: Track) {
         findNavController().navigate(
             R.id.action_library_fragment_to_audio_player_fragment,
@@ -48,9 +54,14 @@ class LibraryFragment : Fragment() {
         )
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        tabMediator?.detach() // Отсоединяем здесь, а не в onDestroy()
+        tabMediator = null
+        _binding = null
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        _binding = null
-        tabMediator.detach()
     }
 }
