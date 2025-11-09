@@ -1,48 +1,68 @@
 package com.example.playlistmaker.ui.search.view_model
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.data.search.Track
 import com.example.playlistmaker.domain.search.SearchResult
 import com.example.playlistmaker.domain.search.api.SearchInteractor
-import com.example.playlistmaker.ui.library.adapter.TrackAdapter
 import com.example.playlistmaker.ui.utils.Debouncer
-import com.example.playlistmaker.ui.utils.SingleLiveEvent
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val searchInteractor: SearchInteractor,
     private val debouncer: Debouncer
-) : ViewModel(), TrackAdapter.OnItemClickListener {
+) : ViewModel() {
 
-    private val _state = MutableLiveData<SearchState>()
-    val state: LiveData<SearchState> = _state
+    private val _state = MutableStateFlow<SearchState>(SearchState.Default)
+    val state: StateFlow<SearchState> = _state.asStateFlow()
 
-    private val _navigateToPlayer = SingleLiveEvent<Track?>()
-    val navigateToPlayer: SingleLiveEvent<Track?> = _navigateToPlayer
+    private val _navigateToPlayer = MutableStateFlow<Track?>(null)
+    val navigateToPlayer: StateFlow<Track?> = _navigateToPlayer.asStateFlow()
+    private val _searchText = MutableStateFlow("")
+    val searchText: StateFlow<String> = _searchText.asStateFlow()
 
     private var searchJob: Job? = null
     private var currentQuery: String = ""
 
+    fun updateSearchText(text: String) {
+        _searchText.value = text
+    }
+
     fun searchDebounced(query: String) {
         searchJob?.cancel()
         currentQuery = query
+        _searchText.value = query
 
         if (query.isEmpty()) {
             showHistory()
             return
         } else {
-
             debouncer.debounce {
                 _state.value = SearchState.Loading
-                performSearch(query) }
+                performSearch(query)
+            }
         }
     }
 
+    fun clearSearch() {
+        _searchText.value = ""
+        currentQuery = ""
+        showHistory()
+    }
+    fun isOnline(): Boolean {
+        return searchInteractor.isOnline()
+    }
+
     internal fun performSearch(query: String) {
+        if (!searchInteractor.isOnline()) {
+            _state.value = SearchState.NoInternet
+            return
+        }
+
         if (query != currentQuery || query.trim().isEmpty()) {
             if (currentQuery.isEmpty()) {
                 showHistory()
@@ -54,6 +74,8 @@ class SearchViewModel(
 
         searchJob = viewModelScope.launch {
             try {
+                _state.value = SearchState.Loading
+
                 val result = searchInteractor.search(query)
 
                 if (query != currentQuery) {
@@ -81,7 +103,11 @@ class SearchViewModel(
                 }
             } catch (e: Exception) {
                 if (query == currentQuery) {
-                    _state.value = SearchState.Error
+                    if (!searchInteractor.isOnline()) {
+                        _state.value = SearchState.NoInternet
+                    } else {
+                        _state.value = SearchState.Error
+                    }
                 }
             }
         }
@@ -109,22 +135,22 @@ class SearchViewModel(
         _navigateToPlayer.value = null
     }
 
-    override fun onItemClick(track: Track) {
+    fun onTrackClick(track: Track) {
         viewModelScope.launch {
             searchInteractor.addToSearchHistory(track)
             _navigateToPlayer.value = track
         }
     }
 
-    override fun onItemLongClick(track: Track) {}
+    fun getCurrentQuery(): String = currentQuery
 }
 
 sealed class SearchState {
     object Default : SearchState()
     object Loading : SearchState()
     object Empty : SearchState()
-    object NoInternet : SearchState()
     object Error : SearchState()
+    object NoInternet : SearchState()
     data class Content(val tracks: List<Track>) : SearchState()
     data class History(val tracks: List<Track>) : SearchState()
 }
